@@ -6855,15 +6855,31 @@ var GlobalStore = function (_AbstractStore) {
         };
 
         _this.requestLogin = function (username, password) {
-            return (0, _Auth.Login)(username, password);
+            return (0, _Auth.Login)({
+                username: username,
+                password: password
+            }).then(function (resp) {
+                _this.setUser(resp.result);
+                return resp;
+            });
         };
 
         _this.requestRegister = function (username, email, password) {
-            return (0, _Auth.Register)(username, email, password);
+            return (0, _Auth.Register)({
+                username: username,
+                email: email,
+                password: password
+            }).then(function (resp) {
+                _this.setUser(resp.result);
+                return resp;
+            });
         };
 
         _this.requestLogout = function () {
-            return (0, _Auth.Logout)();
+            return (0, _Auth.Logout)().then(function (resp) {
+                _this.setUser({});
+                return resp;
+            });
         };
 
         _this.init = function () {
@@ -6871,7 +6887,10 @@ var GlobalStore = function (_AbstractStore) {
         };
 
         _this.checkMe = function () {
-            return (0, _Auth.WhoAmI)();
+            return (0, _Auth.WhoAmI)().then(function (resp) {
+                _this.setUser(resp.result);
+                return resp;
+            });
         };
         if (!_env.IS_NODE) {
             var initialState = window.__INITIAL_STATE__ || {};
@@ -42851,44 +42870,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function Login(username, password) {
-    var _this = this;
-
-    return _WebApi2.default.Post(ApiPath.login, {
-        username: username,
-        password: password
-    }).then(function (resp) {
-        _this.setUser(resp.result);
-        return resp;
-    });
+function Login(payload) {
+    return _WebApi2.default.Post(ApiPath.login, payload);
 }
-function Register(username, email, password) {
-    var _this2 = this;
-
-    return _WebApi2.default.Post(ApiPath.register, {
-        username: username,
-        email: email,
-        password: password
-    }).then(function (resp) {
-        _this2.setUser(resp.result);
-        return resp;
-    });
+function Register(payload) {
+    return _WebApi2.default.Post(ApiPath.register, payload);
 }
 function Logout() {
-    var _this3 = this;
-
-    return _WebApi2.default.Post(ApiPath.logout, {}).then(function (resp) {
-        _this3.setUser({});
-        return resp;
-    });
+    return _WebApi2.default.Post(ApiPath.logout, {});
 }
 function WhoAmI() {
-    var _this4 = this;
-
-    return _WebApi2.default.Post(ApiPath.checkMe, {}).then(function (resp) {
-        _this4.setUser(resp.result);
-        return resp;
-    });
+    return _WebApi2.default.Post(ApiPath.checkMe, {});
 }
 exports.default = {
     Login: Login,
