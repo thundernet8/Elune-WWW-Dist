@@ -17086,6 +17086,7 @@ var CreateTopicStore = function (_AbstractStore) {
             _this.contentHtml = html;
             _this.contentRaw = raw;
         };
+        _this.requesting = false;
 
         _this.publishTopic = function () {
             var publishBtnDisabled = _this.publishBtnDisabled,
@@ -17093,11 +17094,13 @@ var CreateTopicStore = function (_AbstractStore) {
                 contentPlain = _this.contentPlain,
                 contentHtml = _this.contentHtml,
                 contentRaw = _this.contentRaw,
-                selectedChannel = _this.selectedChannel;
+                selectedChannel = _this.selectedChannel,
+                requesting = _this.requesting;
 
-            if (publishBtnDisabled) {
-                return;
+            if (publishBtnDisabled || requesting) {
+                Promise.reject(false);
             }
+            _this.requesting = true;
             return (0, _Topic.CreateTopic)({
                 title: title,
                 channelId: selectedChannel.id,
@@ -17107,8 +17110,10 @@ var CreateTopicStore = function (_AbstractStore) {
             }).then(function (resp) {
                 alert(resp.msg);
                 _this.clearData();
+                _this.setField("requesting", false);
             }).catch(function (err) {
                 alert(err.message || err.toString());
+                _this.setField("requesting", false);
             });
         };
         _this.clearData = function () {
@@ -17221,6 +17226,7 @@ __decorate([_mobx.observable], CreateTopicStore.prototype, "contentPlain", void 
 __decorate([_mobx.observable], CreateTopicStore.prototype, "contentHtml", void 0);
 __decorate([_mobx.observable], CreateTopicStore.prototype, "contentRaw", void 0);
 __decorate([_mobx.action], CreateTopicStore.prototype, "contentChange", void 0);
+__decorate([_mobx.observable], CreateTopicStore.prototype, "requesting", void 0);
 __decorate([_mobx.action], CreateTopicStore.prototype, "publishTopic", void 0);
 __decorate([_mobx.action], CreateTopicStore.prototype, "clearData", void 0);
 __decorate([_mobx.computed], CreateTopicStore.prototype, "publishBtnDisabled", null);
@@ -29825,16 +29831,28 @@ var CreationView = function (_React$Component) {
             e.preventDefault();
             e.stopPropagation();
         };
-        _this.renderChannelsModal = function () {
+        _this.publishTopic = function () {
             var _this$store = _this.store,
-                showChannels = _this$store.showChannels,
-                selectedChannel = _this$store.selectedChannel,
-                pendingSelectChannel = _this$store.pendingSelectChannel,
-                topChannels = _this$store.topChannels,
-                subChannels = _this$store.subChannels,
-                toggleChannelsModal = _this$store.toggleChannelsModal,
-                preSelectChannel = _this$store.preSelectChannel,
-                confirmSelectChannel = _this$store.confirmSelectChannel;
+                publishTopic = _this$store.publishTopic,
+                requesting = _this$store.requesting;
+
+            if (requesting) {
+                return;
+            }
+            publishTopic().then(function () {
+                _this.editor.clean();
+            }).catch(function () {});
+        };
+        _this.renderChannelsModal = function () {
+            var _this$store2 = _this.store,
+                showChannels = _this$store2.showChannels,
+                selectedChannel = _this$store2.selectedChannel,
+                pendingSelectChannel = _this$store2.pendingSelectChannel,
+                topChannels = _this$store2.topChannels,
+                subChannels = _this$store2.subChannels,
+                toggleChannelsModal = _this$store2.toggleChannelsModal,
+                preSelectChannel = _this$store2.preSelectChannel,
+                confirmSelectChannel = _this$store2.confirmSelectChannel;
 
             if (!showChannels) {
                 return null;
@@ -29864,11 +29882,11 @@ var CreationView = function (_React$Component) {
                 title = _store.title,
                 onInputTitle = _store.onInputTitle,
                 contentChange = _store.contentChange,
-                publishTopic = _store.publishTopic;
+                requesting = _store.requesting;
 
             return React.createElement("div", { className: styles.creationview }, canGoBack && React.createElement("button", { className: (0, _classnames2.default)("btn btn--icon", [styles.close]), onClick: this.fallback }, React.createElement("i", { className: "icon fa fa-fw fa-close btn-icon" })), React.createElement("section", { className: styles.header }, React.createElement("h2", null, "\u65B0\u7684\u8BDD\u9898"), React.createElement("ul", null, React.createElement("li", { className: styles.channels }, selectedChannel && React.createElement("span", { className: styles.channel, onClick: toggleChannelsModal, style: {
                     backgroundColor: selectedChannel.color
-                }, title: selectedChannel.description }, selectedChannel.title), !selectedChannel && React.createElement("span", { className: styles.choose, onClick: toggleChannelsModal }, "\u9009\u62E9\u9891\u9053")), React.createElement("li", { className: styles.title }, React.createElement("h3", null, React.createElement("input", { className: (0, _classnames2.default)("form-control", styles.titleInput), value: title, onChange: onInputTitle, placeholder: "话题标题" }))))), React.createElement("section", { className: styles.contentEditor }, React.createElement(_editor2.default, { ref: this.refEditor, rawContent: "", onChange: contentChange })), React.createElement("section", { className: styles.footer }, React.createElement("button", { className: (0, _classnames2.default)("btn btn--primary", [styles.publishBtn]), type: "button", disabled: publishBtnDisabled, onClick: publishTopic }, "\u53D1\u5E03\u8BDD\u9898")), this.renderChannelsModal());
+                }, title: selectedChannel.description }, selectedChannel.title), !selectedChannel && React.createElement("span", { className: styles.choose, onClick: toggleChannelsModal }, "\u9009\u62E9\u9891\u9053")), React.createElement("li", { className: styles.title }, React.createElement("h3", null, React.createElement("input", { className: (0, _classnames2.default)("form-control", styles.titleInput), value: title, onChange: onInputTitle, placeholder: "话题标题" }))))), React.createElement("section", { className: styles.contentEditor }, React.createElement(_editor2.default, { ref: this.refEditor, rawContent: "", onChange: contentChange })), React.createElement("section", { className: styles.footer }, React.createElement("button", { className: (0, _classnames2.default)("btn btn--primary", [styles.publishBtn]), type: "button", disabled: publishBtnDisabled, onClick: this.publishTopic }, React.createElement("span", { className: "btn-label" }, "\u53D1\u5E03\u8BDD\u9898", requesting && React.createElement("i", { className: "fa fa-spin fa-spinner" })))), this.renderChannelsModal());
         }
     }]);
 
@@ -29947,6 +29965,11 @@ var LocalEditor = function (_React$Component) {
                         link: resp.result[0]
                     }
                 };
+            });
+        };
+        _this.clean = function () {
+            _this.setState({
+                editorState: _draftJs.EditorState.createEmpty()
             });
         };
         var editorState = props.rawContent ? _draftJs.EditorState.createWithContent((0, _draftJs.convertFromRaw)(JSON.parse(props.rawContent))) : _draftJs.EditorState.createEmpty();
