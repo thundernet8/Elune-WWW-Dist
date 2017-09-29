@@ -17106,9 +17106,16 @@ var CreateTopicStore = function (_AbstractStore) {
                 contentRaw: contentRaw
             }).then(function (resp) {
                 alert(resp.msg);
+                _this.clearData();
             }).catch(function (err) {
                 alert(err.message || err.toString());
             });
+        };
+        _this.clearData = function () {
+            _this.title = "";
+            _this.contentPlain = "";
+            _this.contentHtml = "";
+            _this.contentRaw = "";
         };
         if (!_env.IS_NODE) {
             var initialState = window.__INITIAL_STATE__ || {};
@@ -17215,6 +17222,7 @@ __decorate([_mobx.observable], CreateTopicStore.prototype, "contentHtml", void 0
 __decorate([_mobx.observable], CreateTopicStore.prototype, "contentRaw", void 0);
 __decorate([_mobx.action], CreateTopicStore.prototype, "contentChange", void 0);
 __decorate([_mobx.action], CreateTopicStore.prototype, "publishTopic", void 0);
+__decorate([_mobx.action], CreateTopicStore.prototype, "clearData", void 0);
 __decorate([_mobx.computed], CreateTopicStore.prototype, "publishBtnDisabled", null);
 
 /***/ }),
