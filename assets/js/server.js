@@ -61176,10 +61176,10 @@ var _WebApi2 = _interopRequireDefault(_WebApi);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function UploadImage(fileData) {
-    return _WebApi2.default.Put("upload/images", fileData);
+    return _WebApi2.default.Post("upload/images", fileData);
 }
 function UploadAvatar(fileData) {
-    return _WebApi2.default.Put("upload/avatars", fileData);
+    return _WebApi2.default.Post("upload/avatars", fileData);
 }
 exports.default = {
     UploadImage: UploadImage,
