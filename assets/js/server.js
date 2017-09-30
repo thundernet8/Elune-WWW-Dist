@@ -73050,7 +73050,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _classCallCheck2 = __webpack_require__(0);
@@ -73075,88 +73075,90 @@ var _utils = __webpack_require__(32);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var root = typeof window === "undefined" ? global : window;
+
 var windowKey = Symbol.for("er_register_map");
-var registerMap = window[windowKey] = window[windowKey] || {
-  ids: {}
+var registerMap = root[windowKey] = root[windowKey] || {
+    ids: {}
 };
 
 var not_null = function not_null(t) {
-  return t != null;
+    return t != null;
 };
 
 var hasRegistered = function hasRegistered(_ref) {
-  var id = _ref.id;
+    var id = _ref.id;
 
-  return not_null(registerMap.ids[id]);
+    return not_null(registerMap.ids[id]);
 };
 
 var cleanRegister = function cleanRegister(props) {
-  var target = props.target,
-      eventName = props.eventName,
-      func = props.func,
-      isUseCapture = props.isUseCapture,
-      id = props.id;
+    var target = props.target,
+        eventName = props.eventName,
+        func = props.func,
+        isUseCapture = props.isUseCapture,
+        id = props.id;
 
-  if (hasRegistered(props)) {
-    target.removeEventListener(eventName, func, isUseCapture);
-    delete registerMap.ids[id];
-  }
+    if (hasRegistered(props)) {
+        target.removeEventListener(eventName, func, isUseCapture);
+        delete registerMap.ids[id];
+    }
 };
 
 var doRegister = function doRegister(props) {
-  var id = props.id,
-      eventName = props.eventName,
-      func = props.func,
-      isUseCapture = props.isUseCapture;
+    var id = props.id,
+        eventName = props.eventName,
+        func = props.func,
+        isUseCapture = props.isUseCapture;
 
-  registerMap.ids[id] = id;
-  document.addEventListener(eventName, func, isUseCapture);
+    registerMap.ids[id] = id;
+    document.addEventListener(eventName, func, isUseCapture);
 };
 
 var EventRegister = function (_Component) {
-  (0, _inherits3.default)(EventRegister, _Component);
+    (0, _inherits3.default)(EventRegister, _Component);
 
-  function EventRegister() {
-    (0, _classCallCheck3.default)(this, EventRegister);
+    function EventRegister() {
+        (0, _classCallCheck3.default)(this, EventRegister);
 
-    return (0, _possibleConstructorReturn3.default)(this, _Component.apply(this, arguments));
-  }
+        return (0, _possibleConstructorReturn3.default)(this, _Component.apply(this, arguments));
+    }
 
-  EventRegister.prototype.componentDidMount = function componentDidMount() {
-    var _props = this.props,
-        eventName = _props.eventName,
-        id = _props.id;
+    EventRegister.prototype.componentDidMount = function componentDidMount() {
+        var _props = this.props,
+            eventName = _props.eventName,
+            id = _props.id;
 
-    eventName = eventName.toLowerCase();
-    eventName = /^on/.test(eventName) ? eventName.substring(2) : eventName;
-    this.cached = Object.assign({}, this.props, { eventName: eventName });
+        eventName = eventName.toLowerCase();
+        eventName = /^on/.test(eventName) ? eventName.substring(2) : eventName;
+        this.cached = Object.assign({}, this.props, { eventName: eventName });
 
-    (0, _utils.require_condition)(typeof id === 'string', 'id prop is required');
-    (0, _utils.require_condition)(!hasRegistered(this.cached), 'id: ' + id + ' has been registered');
+        (0, _utils.require_condition)(typeof id === "string", "id prop is required");
+        (0, _utils.require_condition)(!hasRegistered(this.cached), "id: " + id + " has been registered");
 
-    doRegister(this.cached);
-  };
+        doRegister(this.cached);
+    };
 
-  EventRegister.prototype.componentWillUnmount = function componentWillUnmount() {
-    cleanRegister(this.cached);
-  };
+    EventRegister.prototype.componentWillUnmount = function componentWillUnmount() {
+        cleanRegister(this.cached);
+    };
 
-  EventRegister.prototype.render = function render() {
-    return null;
-  };
+    EventRegister.prototype.render = function render() {
+        return null;
+    };
 
-  return EventRegister;
+    return EventRegister;
 }(_react.Component);
 
 exports.default = EventRegister;
 
 
 EventRegister.propTypes = {
-  id: _propTypes2.default.string.isRequired,
-  target: _propTypes2.default.object.isRequired,
-  eventName: _propTypes2.default.string.isRequired,
-  func: _propTypes2.default.func.isRequired,
-  isUseCapture: _propTypes2.default.bool
+    id: _propTypes2.default.string.isRequired,
+    target: _propTypes2.default.object.isRequired,
+    eventName: _propTypes2.default.string.isRequired,
+    func: _propTypes2.default.func.isRequired,
+    isUseCapture: _propTypes2.default.bool
 };
 
 /***/ }),
