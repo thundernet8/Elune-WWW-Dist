@@ -6890,7 +6890,7 @@ module.exports = DraftModifier;
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && typeof window === "undefined";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -23935,16 +23935,25 @@ var HomeStore = function (_AbstractStore) {
             });
         };
         _this.topicsLoading = true;
+        _this.order = "DESC";
+        _this.orderBy = "post_time";
+        _this.switchSort = function (orderBy) {
+            _this.orderBy = orderBy;
+            _this.refreshTopics();
+        };
         _this.getTopics = function () {
             var page = _this.page,
                 pageSize = _this.pageSize,
-                topics = _this.topics;
+                topics = _this.topics,
+                order = _this.order,
+                orderBy = _this.orderBy;
 
             var params = {
                 page: page,
                 pageSize: pageSize,
-                order: "DESC",
-                orderBy: "id" };
+                order: order,
+                orderBy: orderBy
+            };
             _this.setField("topicsLoading", true);
             return (0, _Topic.FetchTopics)(params).then(function (resp) {
                 _this.setTopics(topics.concat(resp.items));
@@ -24072,6 +24081,12 @@ __decorate([_mobx.observable], HomeStore.prototype, "pageSize", void 0);
 __decorate([_mobx.observable], HomeStore.prototype, "total", void 0);
 __decorate([_mobx.computed], HomeStore.prototype, "hasMoreTopic", null);
 __decorate([_mobx.observable], HomeStore.prototype, "topicsLoading", void 0);
+__decorate([_mobx.observable], HomeStore.prototype, "order", void 0);
+__decorate([_mobx.observable], HomeStore.prototype, "orderBy", void 0);
+__decorate([_mobx.action], HomeStore.prototype, "switchSort", void 0);
+__decorate([_mobx.action], HomeStore.prototype, "getTopics", void 0);
+__decorate([_mobx.action], HomeStore.prototype, "getNextPageTopics", void 0);
+__decorate([_mobx.action], HomeStore.prototype, "refreshTopics", void 0);
 
 /***/ }),
 /* 157 */
@@ -79083,11 +79098,6 @@ var HomeMain = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (HomeMain.__proto__ || Object.getPrototypeOf(HomeMain)).call(this, props));
 
-        _this.selectSort = function (value) {
-            _this.setState({
-                sort: value
-            });
-        };
         _this.renderTopicList = function () {
             var _this$store = _this.store,
                 topics = _this$store.topics,
@@ -79097,9 +79107,6 @@ var HomeMain = function (_React$Component) {
                 return React.createElement("li", { key: index }, React.createElement(_topicItem2.default, { key: index, topic: topic }));
             }), topicsLoading && React.createElement("div", { className: styles.topicsLoading }, React.createElement("i", { className: "el-icon-loading" })));
         };
-        _this.state = {
-            sort: "latest"
-        };
         _this.store = _HomeStore2.default.getInstance();
         return _this;
     }
@@ -79107,14 +79114,15 @@ var HomeMain = function (_React$Component) {
     _createClass(HomeMain, [{
         key: "render",
         value: function render() {
-            var sort = this.state.sort;
             var _store = this.store,
                 hasMoreTopic = _store.hasMoreTopic,
                 topicsLoading = _store.topicsLoading,
                 getNextPageTopics = _store.getNextPageTopics,
-                refreshTopics = _store.refreshTopics;
+                refreshTopics = _store.refreshTopics,
+                switchSort = _store.switchSort,
+                orderBy = _store.orderBy;
 
-            return React.createElement("div", { className: styles.main }, React.createElement("div", { className: styles.toolbar }, React.createElement(_select2.default, { value: sort, onSelect: this.selectSort }, React.createElement(_select2.default.Option, { value: "latest" }, "\u6700\u65B0\u56DE\u590D"), React.createElement(_select2.default.Option, { value: "top" }, "\u70ED\u95E8\u8BDD\u9898"), React.createElement(_select2.default.Option, { value: "newest" }, "\u8FD1\u671F\u8BDD\u9898"), React.createElement(_select2.default.Option, { value: "oldest" }, "\u5386\u53F2\u8BDD\u9898")), React.createElement("ul", { className: styles.actions }, React.createElement("li", { className: "item-refresh" }, React.createElement("button", { title: "刷新", className: "btn btn--icon hasIcon", type: "button", onClick: refreshTopics }, React.createElement("i", { className: "icon fa fa-fw fa-refresh btn-icon" }))), React.createElement("li", { className: "item-markAllAsRead" }, React.createElement("button", { title: "标记所有为已读", className: "btn btn--icon hasIcon", type: "button" }, React.createElement("i", { className: "icon fa fa-fw fa-check btn-icon" }))))), React.createElement("div", { className: styles.topicListWrapper }, this.renderTopicList(), !topicsLoading && hasMoreTopic && React.createElement("div", { className: styles.loadMore }, React.createElement(_next.Button, { onClick: getNextPageTopics }, "\u8F7D\u5165\u66F4\u591A"))));
+            return React.createElement("div", { className: styles.main }, React.createElement("div", { className: styles.toolbar }, React.createElement(_select2.default, { value: orderBy, onSelect: switchSort }, React.createElement(_select2.default.Option, { value: "post_time" }, "\u6700\u65B0\u56DE\u590D"), React.createElement(_select2.default.Option, { value: "posts_count" }, "\u70ED\u95E8\u8BDD\u9898"), React.createElement(_select2.default.Option, { value: "create_time" }, "\u8FD1\u671F\u8BDD\u9898")), React.createElement("ul", { className: styles.actions }, React.createElement("li", { className: "item-refresh" }, React.createElement("button", { title: "刷新", className: "btn btn--icon hasIcon", type: "button", onClick: refreshTopics }, React.createElement("i", { className: "icon fa fa-fw fa-refresh btn-icon" }))), React.createElement("li", { className: "item-markAllAsRead" }, React.createElement("button", { title: "标记所有为已读", className: "btn btn--icon hasIcon", type: "button" }, React.createElement("i", { className: "icon fa fa-fw fa-check btn-icon" }))))), React.createElement("div", { className: styles.topicListWrapper }, this.renderTopicList(), !topicsLoading && hasMoreTopic && React.createElement("div", { className: styles.loadMore }, React.createElement(_next.Button, { onClick: getNextPageTopics }, "\u8F7D\u5165\u66F4\u591A"))));
         }
     }]);
 
@@ -79183,11 +79191,24 @@ var TopicItem = function (_React$Component) {
         key: "render",
         value: function render() {
             var read = this.state.read;
+            var _props$topic = this.props.topic,
+                id = _props$topic.id,
+                title = _props$topic.title,
+                content = _props$topic.content,
+                channel = _props$topic.channel,
+                author = _props$topic.author,
+                tags = _props$topic.tags,
+                postsCount = _props$topic.postsCount;
 
-            return React.createElement("div", { className: styles.topicItem }, React.createElement(_dropdown2.default, { className: (0, _classnames2.default)("btn-flat", [styles.actionDropdown]), anchorNode: React.createElement("span", { className: "btn-label" }, React.createElement("i", { className: "fa fa-fw fa-ellipsis-v" })) }, React.createElement(_dropdown2.default.Item, { hasIcon: true }, React.createElement("button", null, React.createElement("i", { className: "fa fa-fw fa-star" }), React.createElement("span", { className: "btn-label" }, "\u5173\u6CE8")))), React.createElement("div", { className: (0, _classnames2.default)([styles.content], _defineProperty({}, styles.read, read)) }, React.createElement(_reactRouterDom.Link, { to: "/u/justjavac", className: styles.author, title: "", "data-original-title": "justjavac 发布于 12月 '15" }, React.createElement("img", { className: styles.avatar, src: defaultAvatar })), React.createElement("ul", { className: styles.badges }, React.createElement("li", { className: "item-sticky" }, React.createElement("span", { className: (0, _classnames2.default)([styles.badge], [styles.sticky]), title: "", "data-original-title": "置顶" }, React.createElement("i", { className: "icon fa fa-fw fa-thumb-tack badge-icon" })))), React.createElement(_reactRouterDom.Link, { to: "/topic/325", className: styles.main }, React.createElement("h3", { className: styles.title }, "Flarum \u65B0\u4EBA\u5FC5\u770B\uFF0C\u6CE8\u610F\u4E8B\u9879\u4EE5\u53CA FAQ"), React.createElement("ul", { className: styles.info }, React.createElement("li", { className: styles.channels }, React.createElement("span", { className: styles.channelLabels }, React.createElement("span", { className: (0, _classnames2.default)([styles.channelLabel, styles.colored]), style: {
-                    color: "rgb(254, 181, 77)",
-                    backgroundColor: "rgb(254, 181, 77)"
-                } }, React.createElement("span", { className: styles.channelLabelText }, "\u6C42\u52A9")), React.createElement("span", { className: styles.channelLabel }, React.createElement("span", { className: styles.channelLabelText }, "Flarum")))), React.createElement("li", { className: styles.reply }, React.createElement("span", null, React.createElement("i", { className: "icon fa fa-fw fa-reply " }), React.createElement("span", { className: styles.username }, "TestTest"), " ", "\u56DE\u590D\u4E8E", " ", React.createElement("time", { "data-pubdate": "true", "data-datetime": "2017-09-15T15:53:30+08:00", title: "2017年9月15日 周五 15:53:30", "data-humantime": "true" }, "2 \u5929\u524D"))), React.createElement("li", { className: styles.excerpt }, React.createElement("span", null, "Flarum \u65B0\u4EBA\u5FC5\u770B\uFF0C\u6CE8\u610F\u4E8B\u9879\u4EE5\u53CA FAQ \u6B64\u5E16\u4E0D\u5B9A\u671F\u66F4\u65B0 \u672C\u793E\u533A\u4E0D\u662F Flarum \u7684 Demo \u6F14\u793A\uFF0C\u6240\u4EE5\u4E0D\u8981\u53D1\u5E03\u65E0\u610F\u4E49\u7684\u5185\u5BB9\uFF0C\u5728\u4F60\u63D0\u95EE\u524D\uFF0C\u8BF7\u52A1\u5FC5\u8981\u9605\u8BFB\u300A\u63D0\u95EE\u7684\u667A\u6167\u300B\u3002\u4E0D\u4EC5\u4EC5\u662F\u5728 Flarum \u793E\u533A\uFF0C\u4EE5\u540E\u5728\u4EFB\u4F55\u793E\u533A\u63D0\u95EE\uFF0C\u90FD\u8981\u9075\u5B88\u63D0\u95EE\u7684\u667A\u6167\u3002 FAQ \u600E\u4E48\u5B9E\u73B0\u7684\u4E2D\u6587\u641C\u7D22\uFF1F \u5982\u4F55\u53D1\u56FE\u7247 \u5B89\u88C5\u5B8C\u6210\uFF0C\u65E0\u6CD5\u53D1\u9001\u90AE\u4EF6 \u5E16\u5B50\u5982\u4F55\u6392\u7248\uFF1F\u5982\u4F55\u53D1\u5E03\u56FE\u7247\uFF1F\u2014\u2014 markdown \u8BED\u6CD5 \u80FD\u4E0D\u80FD\u5E2E\u6211\u5F00\u53D1\u4E00\u4E2Axxx\u63D2\u4EF6...")))), React.createElement("span", { className: styles.count, title: "标记为已读" }, React.createElement("i", { className: "fa fa-fw fa-comment" }), "54")));
+            return React.createElement("div", { className: styles.topicItem }, React.createElement(_dropdown2.default, { className: (0, _classnames2.default)("btn-flat", [styles.actionDropdown]), anchorNode: React.createElement("span", { className: "btn-label" }, React.createElement("i", { className: "fa fa-fw fa-ellipsis-v" })) }, React.createElement(_dropdown2.default.Item, { hasIcon: true }, React.createElement("button", null, React.createElement("i", { className: "fa fa-fw fa-star" }), React.createElement("span", { className: "btn-label" }, "\u5173\u6CE8")))), React.createElement("div", { className: (0, _classnames2.default)([styles.content], _defineProperty({}, styles.read, read)) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + author.username, className: styles.author, title: "", "data-original-title": "justjavac 发布于 12月 '15" }, React.createElement("img", { className: styles.avatar, src: defaultAvatar })), React.createElement("ul", { className: styles.badges }, React.createElement("li", { className: "item-sticky" }, React.createElement("span", { className: (0, _classnames2.default)([styles.badge], [styles.sticky]), title: "", "data-original-title": "置顶" }, React.createElement("i", { className: "icon fa fa-fw fa-thumb-tack badge-icon" })))), React.createElement(_reactRouterDom.Link, { to: "/topic/" + id, className: styles.main }, React.createElement("h3", { className: styles.title }, title), React.createElement("ul", { className: styles.info }, React.createElement("li", { className: styles.channels }, React.createElement("span", { className: styles.channelLabels }, React.createElement("span", { className: (0, _classnames2.default)([styles.channelLabel, styles.colored]), style: {
+                    color: channel.color,
+                    backgroundColor: channel.color
+                } }, React.createElement("span", { className: styles.channelLabelText }, channel.title)), tags.map(function (tag, index) {
+                if (index > 1) {
+                    return null;
+                }
+                return React.createElement("span", { className: (0, _classnames2.default)([styles.channelLabel], [styles.tagLabel]) }, React.createElement("span", { className: (0, _classnames2.default)([styles.channelLabelText], [styles.tagLabelText]) }, tag.title));
+            }))), React.createElement("li", { className: styles.reply }, React.createElement("span", null, React.createElement("i", { className: "icon fa fa-fw fa-reply " }), React.createElement("span", { className: styles.username }, "TestTest"), " ", "\u56DE\u590D\u4E8E", " ", React.createElement("time", { "data-pubdate": "true", "data-datetime": "2017-09-15T15:53:30+08:00", title: "2017年9月15日 周五 15:53:30", "data-humantime": "true" }, "2 \u5929\u524D"))), React.createElement("li", { className: styles.excerpt }, React.createElement("span", null, content.substr(0, 100))))), React.createElement("span", { className: styles.count, title: "标记为已读" }, React.createElement("i", { className: "fa fa-fw fa-comment" }), postsCount)));
         }
     }]);
 
@@ -79319,7 +79340,7 @@ module.exports = {"selectWrapper":"__4dvOD","large":"__2sK4U","small":"__1ztf6",
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"main":"__vbpcq","toolbar":"__1Ifs5","actions":"__1AsdT","topicListWrapper":"__23ONK","topicList":"__TVge1","loadMore":"__17E_H"};
+module.exports = {"main":"__vbpcq","toolbar":"__1Ifs5","actions":"__1AsdT","topicListWrapper":"__23ONK","topicList":"__TVge1","topicsLoading":"__229Et","loadMore":"__17E_H"};
 
 /***/ }),
 /* 717 */
