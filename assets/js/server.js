@@ -23968,7 +23968,7 @@ var HomeStore = function (_AbstractStore) {
                 return resp;
             });
         };
-        _this.topicsLoading = true;
+        _this.topicsLoading = false;
         _this.order = "DESC";
         _this.orderBy = "post_time";
         _this.switchSort = function (orderBy) {
@@ -24041,7 +24041,9 @@ var HomeStore = function (_AbstractStore) {
         value: function toJSON() {
             var obj = _get(HomeStore.prototype.__proto__ || Object.getPrototypeOf(HomeStore.prototype), "toJSON", this).call(this);
             return Object.assign(obj, {
-                channels: this.channels
+                channels: this.channels,
+                topics: this.topics,
+                total: this.total
             });
         }
     }, {
@@ -24051,11 +24053,17 @@ var HomeStore = function (_AbstractStore) {
             if (!json) {
                 return this;
             }
-            var channels = json.channels;
+            var channels = json.channels,
+                topics = json.topics,
+                total = json.total;
 
             if (typeof channels !== "undefined") {
                 this.setChannels(channels);
             }
+            if (typeof topics !== "undefined") {
+                this.setTopics(topics);
+            }
+            this.setField("total", total);
             return this;
         }
     }, {
@@ -80867,7 +80875,7 @@ var CreationView = function (_React$Component) {
 
             return React.createElement("div", { className: styles.creationview }, canGoBack && React.createElement("button", { className: (0, _classnames2.default)("btn btn--icon", [styles.close]), onClick: this.fallback }, React.createElement("i", { className: "el-icon-close" })), React.createElement("section", { className: styles.header }, React.createElement("h2", null, "\u65B0\u7684\u8BDD\u9898"), React.createElement("ul", null, React.createElement("li", { className: styles.channels }, selectedChannel && React.createElement("span", { className: styles.channel, onClick: toggleChannelsModal, style: {
                     backgroundColor: selectedChannel.color
-                }, title: selectedChannel.description }, selectedChannel.title), !selectedChannel && React.createElement("span", { className: styles.choose, onClick: toggleChannelsModal }, "\u9009\u62E9\u9891\u9053")), React.createElement("li", { className: styles.title }, React.createElement("h3", null, React.createElement("input", { className: (0, _classnames2.default)("form-control", styles.titleInput), value: title, onChange: onInputTitle, placeholder: "话题标题" }))))), React.createElement("section", { className: styles.contentEditor }, React.createElement(_editor2.default, { ref: this.refEditor, rawContent: "", onChange: contentChange })), React.createElement("section", { className: styles.footer }, React.createElement(_next.Button, { className: (0, _classnames2.default)([styles.publishBtn]), type: "primary", size: "large", disabled: publishBtnDisabled, onClick: this.publishTopic }, "\u53D1\u5E03\u8BDD\u9898", requesting && React.createElement("i", { className: "el-icon-loading el-icon-right" }))), this.renderChannelsModal(), React.createElement("i", null));
+                }, title: selectedChannel.description }, selectedChannel.title), !selectedChannel && React.createElement("span", { className: styles.choose, onClick: toggleChannelsModal }, "\u9009\u62E9\u9891\u9053")), React.createElement("li", { className: styles.title }, React.createElement("h3", null, React.createElement("input", { className: (0, _classnames2.default)("form-control", styles.titleInput), value: title, onChange: onInputTitle, placeholder: "话题标题" }))))), React.createElement("section", { className: styles.contentEditor }, React.createElement(_editor2.default, { ref: this.refEditor, rawContent: "", onChange: contentChange })), React.createElement("section", { className: styles.footer }, React.createElement(_next.Button, { className: (0, _classnames2.default)([styles.publishBtn]), type: "primary", size: "large", disabled: publishBtnDisabled, onClick: this.publishTopic }, "\u53D1\u5E03\u8BDD\u9898", requesting && React.createElement("i", { className: "el-icon-loading el-icon-right" }))), this.renderChannelsModal());
         }
     }]);
 
