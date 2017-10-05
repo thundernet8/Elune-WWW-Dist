@@ -6998,7 +6998,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && typeof window === "undefined";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -81538,7 +81538,7 @@ var LocalEditor = function (_React$Component) {
         value: function render() {
             var editorState = this.state.editorState;
 
-            return React.createElement("div", { className: styles.localEditor }, React.createElement(_reactDraftWysiwyg.Editor, { editorState: editorState, toolbarClassName: styles.editorToolbar, wrapperClassName: styles.editorWrapper, editorClassName: styles.editor, onEditorStateChange: this.onEditorStateChange, toolbar: {
+            return React.createElement("div", { className: styles.localEditor }, React.createElement(_reactDraftWysiwyg.Editor, { editorState: editorState, toolbarClassName: styles.editorToolbar, wrapperClassName: styles.editorWrapper, editorClassName: styles.editor, onEditorStateChange: this.onEditorStateChange, placeholder: "输入正文...", toolbar: {
                     options: ["inline", "blockType", "fontSize", "fontFamily", "colorPicker", "link", "emoji", "image", "list", "textAlign", "remove", "history"],
                     fontSize: {
                         options: [10, 12, 14, 16, 18, 24, 30]
