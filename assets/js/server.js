@@ -17161,6 +17161,7 @@ var HomeStore = function (_AbstractStore) {
             _this.refreshTopics();
         };
         _this.getTopics = function () {
+            var keepExist = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
             var page = _this.page,
                 pageSize = _this.pageSize,
                 topics = _this.topics,
@@ -17175,7 +17176,7 @@ var HomeStore = function (_AbstractStore) {
             };
             _this.setField("topicsLoading", true);
             return (0, _Topic.FetchTopics)(params).then(function (resp) {
-                _this.setTopics(topics.concat(resp.items));
+                _this.setTopics(keepExist ? topics.concat(resp.items) : resp.items);
                 _this.setField("topicsLoading", false);
                 if (page === 1) {
                     _this.setField("total", resp.total);
@@ -17194,7 +17195,7 @@ var HomeStore = function (_AbstractStore) {
                 return;
             }
             _this.setField("page", page + 1);
-            _this.getTopics();
+            _this.getTopics(true);
         };
         _this.refreshTopics = function () {
             _this.setTopics([]);
