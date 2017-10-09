@@ -6285,7 +6285,7 @@ exports.default = {
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && typeof window === "undefined";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -19017,7 +19017,7 @@ Object.defineProperty(exports, "__esModule", {
 var getTimeDiff = exports.getTimeDiff = function getTimeDiff(targetTime, sourceTime) {
     sourceTime = sourceTime || new Date();
     var tail = targetTime < sourceTime ? "前" : "后";
-    var seconds = Math.abs(Number(((targetTime.getTime() - sourceTime.getTime()) / 1000).toFixed(0)));
+    var seconds = Math.abs(Number(((targetTime.getTime() - (sourceTime.getTime() + sourceTime.getTimezoneOffset() * 60000)) / 1000).toFixed(0)));
     if (seconds < 60) {
         return "刚刚";
     }
@@ -65199,8 +65199,9 @@ var LocalEditor = function (_React$Component) {
             var json = JSON.stringify(raw);
             var html = (0, _draftjsToHtml2.default)(raw);
             var plainText = editorState.getCurrentContent().getPlainText();
-            console.log(html);
-            onChange && onChange(json, html, plainText);
+            if (onChange) {
+                onChange(json, html, plainText);
+            }
             _this.setState({
                 editorState: editorState
             });
