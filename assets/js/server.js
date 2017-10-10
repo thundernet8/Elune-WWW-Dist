@@ -6285,7 +6285,7 @@ exports.default = {
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && typeof window === "undefined";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -25500,11 +25500,10 @@ var CreateTopicStore = function (_AbstractStore) {
                 contentHtml: contentHtml,
                 contentRaw: contentRaw
             }).then(function (resp) {
-                alert(resp.msg);
                 _this.clearData();
                 _this.setField("requesting", false);
+                return resp;
             }).catch(function (err) {
-                alert(err.message || err.toString());
                 _this.setField("requesting", false);
                 throw new Error(err);
             });
@@ -65072,7 +65071,16 @@ var CreationView = function (_React$Component) {
             }
             publishTopic().then(function () {
                 _this.editor.clean();
-            }).catch(function () {});
+                (0, _next.Message)({
+                    message: "创建话题成功",
+                    type: "success"
+                });
+            }).catch(function (err) {
+                (0, _next.Message)({
+                    message: err.message || err.toString(),
+                    type: "error"
+                });
+            });
         };
         _this.renderChannelsModal = function () {
             var _this$store2 = _this.store,
