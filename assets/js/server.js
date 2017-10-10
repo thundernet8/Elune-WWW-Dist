@@ -65257,7 +65257,7 @@ var LocalEditor = function (_React$Component) {
                         options: [10, 12, 14, 16, 18, 24, 30]
                     },
                     fontFamily: {
-                        options: ["Arial", "Georgia", "Microsoft Yahei", "Times New Roman"]
+                        options: ["宋体", "微软雅黑", "黑体", "楷体_GB2312", "幼圆", "Arial", "Arial Black", "Comic Sans MS", "Times New Roman"]
                     },
                     image: {
                         uploadEnabled: true,
