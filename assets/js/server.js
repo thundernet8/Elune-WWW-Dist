@@ -21307,6 +21307,11 @@ var Modal = function (_React$Component) {
             }
         }
     }, {
+        key: "componentWillUnmount",
+        value: function componentWillUnmount() {
+            document.body.style.overflow = "";
+        }
+    }, {
         key: "render",
         value: function render() {
             var _props = this.props,
