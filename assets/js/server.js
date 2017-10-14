@@ -78631,7 +78631,7 @@ var ActivationView = function (_React$Component) {
             if (step !== ActivateSteps.ACTIVATED) {
                 return null;
             }
-            return React.createElement("div", { className: styles.content }, React.createElement("p", { className: styles.activated }, "\u60A8\u7684\u8D26\u6237\u5DF2\u6FC0\u6D3B\u6210\u529F\uFF0C\u5C06\u5728", React.createElement("span", { className: styles.timing }, timing), "\u79D2\u5185\u8DF3\u8F6C\u81F3\u9996\u9875."));
+            return React.createElement("div", { className: styles.content }, React.createElement("div", { className: styles.activated }, React.createElement("p", null, "\u60A8\u7684\u8D26\u6237\u5DF2\u6FC0\u6D3B\u6210\u529F\uFF0C\u5C06\u5728", React.createElement("span", { className: styles.timing }, timing), "\u79D2\u5185\u8DF3\u8F6C\u81F3\u9996\u9875.")));
         };
         _this.renderActivateFailStep = function () {
             var step = _this.state.step;
