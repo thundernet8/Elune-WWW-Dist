@@ -21379,7 +21379,7 @@ exports.Register = Register;
 exports.Logout = Logout;
 exports.WhoAmI = WhoAmI;
 exports.Activate = Activate;
-exports.ReActivae = ReActivae;
+exports.ReActivate = ReActivate;
 
 var _WebApi = __webpack_require__(59);
 
@@ -21402,7 +21402,7 @@ function WhoAmI() {
 function Activate(payload) {
     return _WebApi2.default.Post("activate" + payload.tokenSearch, {});
 }
-function ReActivae(payload) {
+function ReActivate(payload) {
     return _WebApi2.default.Post("reactivate", payload);
 }
 exports.default = {
@@ -78596,7 +78596,7 @@ var ActivationView = function (_React$Component) {
                 });
                 return false;
             }
-            (0, _Auth.ReActivae)({ email: email }).then(function (resp) {
+            (0, _Auth.ReActivate)({ email: email }).then(function (resp) {
                 if (resp) {
                     (0, _next.Message)({
                         message: "激活邮件已重新发送",
@@ -78631,7 +78631,7 @@ var ActivationView = function (_React$Component) {
             if (step !== ActivateSteps.ACTIVATED) {
                 return null;
             }
-            return React.createElement("div", { className: styles.content }, React.createElement("p", { className: styles.success }, "\u60A8\u7684\u8D26\u6237\u5DF2\u6FC0\u6D3B\u6210\u529F\uFF0C\u5C06\u5728", React.createElement("span", { className: styles.timing }, timing), "\u79D2\u5185\u8DF3\u8F6C\u81F3\u9996\u9875."));
+            return React.createElement("div", { className: styles.content }, React.createElement("p", { className: styles.activated }, "\u60A8\u7684\u8D26\u6237\u5DF2\u6FC0\u6D3B\u6210\u529F\uFF0C\u5C06\u5728", React.createElement("span", { className: styles.timing }, timing), "\u79D2\u5185\u8DF3\u8F6C\u81F3\u9996\u9875."));
         };
         _this.renderActivateFailStep = function () {
             var step = _this.state.step;
@@ -78649,7 +78649,7 @@ var ActivationView = function (_React$Component) {
             if (step !== ActivateSteps.REACTIVATE) {
                 return null;
             }
-            return React.createElement("div", { className: styles.content }, React.createElement("div", { className: styles.reActivate }, React.createElement(_next.Input, { placeholder: "输入账户邮箱", value: email, onChange: _this.onInputEmail }), React.createElement(_next.Button, { type: "primary", onClick: _this.reSendMail }, "\u91CD\u65B0\u53D1\u9001")));
+            return React.createElement("div", { className: styles.content }, React.createElement("div", { className: styles.reActivate }, React.createElement(_next.Input, { placeholder: "输入账户邮箱", value: email, onChange: _this.onInputEmail, className: styles.emailInput }), React.createElement(_next.Button, { type: "primary", onClick: _this.reSendMail, disabled: !(0, _TextKit.isEmail)(email) }, "\u91CD\u65B0\u53D1\u9001")));
         };
         _this.state = {
             timing: 10,
@@ -78695,8 +78695,8 @@ var ActivationView = function (_React$Component) {
         value: function componentDidUpdate() {
             var timing = this.state.timing;
 
-            if (timing <= 0) {
-                typeof window !== "undefined" && (window.location.href = "/");
+            if (timing <= 0 && typeof window !== "undefined") {
+                window.location.href = "/";
             }
         }
     }, {
@@ -78727,7 +78727,7 @@ exports.default = ActivationViewWithRouter;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"activationView":"__2sjBU","container":"__2-g1p"};
+module.exports = {"activationView":"__2sjBU","container":"__2-g1p","content":"__3BORl","activating":"__o5IRt","activated":"__3fcij","timing":"__3g1jb","activateFailed":"__1GYF1","reActivate":"__R8Br_","emailInput":"__25YuQ"};
 
 /***/ }),
 /* 753 */
