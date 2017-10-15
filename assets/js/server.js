@@ -6285,7 +6285,7 @@ exports.default = {
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && typeof window === "undefined";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -25049,6 +25049,32 @@ var TopicStore = function (_AbstractStore) {
             _this.setField("postTotal", 0);
             _this.getPosts();
         };
+
+        _this.editingPostRaw = "";
+        _this.editingPostHtml = "";
+        _this.editingPostText = "";
+        _this.editingPostMentions = [];
+        _this.goComment = function () {
+            var topic = _this.topic;
+
+            var value = topic.authorName + "#0";
+            var raw = "{\"entityMap\":{\"0\":{\"type\":\"MENTION\",\"mutability\":\"IMMUTABLE\",\"data\":{\"text\":\"@" + value + "\",\"value\":\"" + value + "\",\"url\":\"#thread\"}}},\"blocks\":[{\"key\":\"ob2h\",\"text\":\"@" + value + " \",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[{\"offset\":0,\"length\":" + (value.length + 1) + ",\"key\":0}],\"data\":{}}]}";
+            var html = "<p><a href=\"#thread\" class=\"wysiwyg-mention\" data-mention data-value=\"" + value + "\">@" + value + "</a>&nbsp;</p>";
+            _this.editingPostRaw = raw;
+            _this.editingPostHtml = html;
+            _this.editingPostText = "@" + value;
+            _this.editingPostMentions = [{
+                text: "@" + value,
+                value: value,
+                url: "#thread"
+            }];
+        };
+        _this.editPost = function (raw, html, text, mentions) {
+            _this.editingPostRaw = raw;
+            _this.editingPostHtml = html;
+            _this.editingPostText = text;
+            _this.editingPostMentions = mentions;
+        };
         if (!_env.IS_NODE) {
             var initialState = window.__INITIAL_STATE__ || {};
             if (initialState && initialState.TopicStore) {
@@ -25104,6 +25130,55 @@ var TopicStore = function (_AbstractStore) {
             return this;
         }
     }, {
+        key: "mentions",
+        get: function get() {
+            var topic = this.topic,
+                posts = this.posts,
+                editingPostMentions = this.editingPostMentions;
+
+            var mentions = [];
+            var mentionValues = editingPostMentions.map(function (x) {
+                return x.value;
+            });
+            var includeReply = mentionValues.some(function (x) {
+                return (/(.+)(#[0-9]+)$/.test(x)
+                );
+            });
+            !includeReply && mentions.push({
+                text: topic.author.nickname + " \u56DE\u590D#0 - " + topic.content,
+                value: topic.authorName + "#0",
+                url: "#thread"
+            });
+            mentionValues.indexOf(topic.authorName) < 0 && mentions.push({
+                text: topic.author.nickname,
+                value: "" + topic.authorName,
+                url: "javascript:;"
+            });
+            var postsMap = {};
+            posts.forEach(function (post) {
+                if (!postsMap[post.authorId]) {
+                    postsMap[post.authorId] = [post];
+                } else {
+                    postsMap[post.authorId].push(post);
+                }
+            });
+            Object.keys(postsMap).forEach(function (authorId) {
+                postsMap[authorId].forEach(function (post) {
+                    !includeReply && mentions.push({
+                        text: post.author.nickname + " \u56DE\u590D#" + post.id + " - " + post.content.substr(0, 20),
+                        value: post.authorName + "#" + post.id,
+                        url: "#post-" + post.id
+                    });
+                });
+                mentionValues.indexOf(postsMap[authorId][0].authorName) < 0 && mentions.push({
+                    text: postsMap[authorId][0].author.nickname,
+                    value: "" + postsMap[authorId][0].authorName,
+                    url: "javascript:;"
+                });
+            });
+            return mentions;
+        }
+    }, {
         key: "hasMorePosts",
         get: function get() {
             var postPage = this.postPage,
@@ -25111,6 +25186,11 @@ var TopicStore = function (_AbstractStore) {
                 postTotal = this.postTotal;
 
             return postTotal === -1 || postPage * postPageSize < postTotal;
+        }
+    }, {
+        key: "postBtnDisabled",
+        get: function get() {
+            return this.editingPostText.length < 1;
         }
     }], [{
         key: "getInstance",
@@ -25158,11 +25238,19 @@ __decorate([_mobx.observable], TopicStore.prototype, "order", void 0);
 __decorate([_mobx.observable], TopicStore.prototype, "orderBy", void 0);
 __decorate([_mobx.observable], TopicStore.prototype, "posts", void 0);
 __decorate([_mobx.observable], TopicStore.prototype, "postTotal", void 0);
+__decorate([_mobx.computed], TopicStore.prototype, "mentions", null);
 __decorate([_mobx.computed], TopicStore.prototype, "hasMorePosts", null);
 __decorate([_mobx.action], TopicStore.prototype, "setPosts", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "getPosts", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "getNextPageTopics", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "refreshPosts", void 0);
+__decorate([_mobx.observable], TopicStore.prototype, "editingPostRaw", void 0);
+__decorate([_mobx.observable], TopicStore.prototype, "editingPostHtml", void 0);
+__decorate([_mobx.observable], TopicStore.prototype, "editingPostText", void 0);
+__decorate([_mobx.observable], TopicStore.prototype, "editingPostMentions", void 0);
+__decorate([_mobx.computed], TopicStore.prototype, "postBtnDisabled", null);
+__decorate([_mobx.action], TopicStore.prototype, "goComment", void 0);
+__decorate([_mobx.action], TopicStore.prototype, "editPost", void 0);
 
 /***/ }),
 /* 207 */
@@ -61893,15 +61981,14 @@ var TopicMain = function (_React$Component) {
         _this.refPostBox = function (box) {
             _this.postBox = box;
         };
-        _this.goPostBox = function () {
+        _this.goComment = function () {
+            _this.props.store.goComment();
             _this.postBox.scrollIntoView();
-            _this.setState({
-                commentting: true
-            });
+            _this.toggleCommentting(true);
         };
-        _this.cancelCommentting = function () {
+        _this.toggleCommentting = function (status) {
             _this.setState({
-                commentting: false
+                commentting: status
             });
         };
         _this.renderMainThread = function () {
@@ -61909,7 +61996,7 @@ var TopicMain = function (_React$Component) {
             var topic = store.topic;
 
             var htmlToReactParser = new _htmlToReact.Parser();
-            return React.createElement("div", { className: styles.topicWrapper }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + topic.authorName }, React.createElement("span", { className: styles.avatar }, React.createElement("img", { src: topic.author.avatar || defaultAvatar })), React.createElement("span", { className: styles.username }, topic.authorName)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getLocalDate)(new Date(topic.createTime * 1000)).toLocaleString() }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)(new Date(topic.createTime * 1000))))))), React.createElement("div", { className: styles.topicBody }, htmlToReactParser.parse(topic.contentHtml)), React.createElement("aside", { className: styles.asideActions }, React.createElement("ul", null, React.createElement("li", { className: styles.replyBtn }, React.createElement(_next.Button, { type: "text", onClick: _this.goPostBox }, "\u56DE\u590D")))), React.createElement("footer", null, React.createElement("div", { className: styles.actions }, React.createElement("ul", null, React.createElement("li", { className: styles.views }, React.createElement("i", { className: "fa fa-eye" }), React.createElement("span", { className: styles.count }, topic.viewsCount), "\u6B21\u6D4F\u89C8"), React.createElement("li", { className: styles.favorite }, React.createElement("i", { className: "el-icon-star-off" }), React.createElement("span", { className: styles.count }, topic.favoritesCount), "\u4EBA\u6536\u85CF"), React.createElement("li", { className: styles.upvote }, React.createElement("i", { className: "fa fa-thumbs-o-up" }), React.createElement("span", { className: styles.count }, topic.upvotesCount), "\u9876"), React.createElement("li", { className: styles.downvote }, React.createElement("i", { className: "fa fa-thumbs-o-down" }), React.createElement("span", { className: styles.count }, topic.downvotesCount), "\u8E29"))))));
+            return React.createElement("div", { className: styles.topicWrapper, id: "thread" }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + topic.authorName }, React.createElement("span", { className: styles.avatar }, React.createElement("img", { src: topic.author.avatar || defaultAvatar })), React.createElement("span", { className: styles.username }, topic.authorName)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getLocalDate)(new Date(topic.createTime * 1000)).toLocaleString() }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)(new Date(topic.createTime * 1000))))))), React.createElement("div", { className: styles.topicBody }, htmlToReactParser.parse(topic.contentHtml)), React.createElement("aside", { className: styles.asideActions }, React.createElement("ul", null, React.createElement("li", { className: styles.replyBtn }, React.createElement(_next.Button, { type: "text", onClick: _this.goComment }, "\u56DE\u590D")))), React.createElement("footer", null, React.createElement("div", { className: styles.actions }, React.createElement("ul", null, React.createElement("li", { className: styles.views }, React.createElement("i", { className: "fa fa-eye" }), React.createElement("span", { className: styles.count }, topic.viewsCount), "\u6B21\u6D4F\u89C8"), React.createElement("li", { className: styles.favorite }, React.createElement("i", { className: "el-icon-star-off" }), React.createElement("span", { className: styles.count }, topic.favoritesCount), "\u4EBA\u6536\u85CF"), React.createElement("li", { className: styles.upvote }, React.createElement("i", { className: "fa fa-thumbs-o-up" }), React.createElement("span", { className: styles.count }, topic.upvotesCount), "\u9876"), React.createElement("li", { className: styles.downvote }, React.createElement("i", { className: "fa fa-thumbs-o-down" }), React.createElement("span", { className: styles.count }, topic.downvotesCount), "\u8E29"))))));
         };
         _this.renderPostList = function () {
             var store = _this.props.store;
@@ -61928,7 +62015,10 @@ var TopicMain = function (_React$Component) {
             var store = _this.props.store;
             var loading = store.loading,
                 postsLoading = store.postsLoading,
-                topic = store.topic;
+                topic = store.topic,
+                mentions = store.mentions,
+                postBtnDisabled = store.postBtnDisabled,
+                editingPostRaw = store.editingPostRaw;
             var commentting = _this.state.commentting;
 
             var globalStore = _GlobalStore2.default.Instance;
@@ -61939,15 +62029,15 @@ var TopicMain = function (_React$Component) {
                 return null;
             }
             if (user && commentting) {
-                return React.createElement("div", { className: (0, _classnames2.default)([styles.commentPlaceholder], [styles.commentEditorWrapper]) }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("span", { className: styles.avatar }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: user.nickname }, React.createElement("img", { src: user.avatar || defaultAvatar })))), React.createElement("div", { className: styles.commentEditBody }, React.createElement("ul", null, React.createElement("li", null, React.createElement("h3", null, React.createElement("i", { className: "icon fa fa-fw fa-reply" }), " ", React.createElement("span", null, topic.title))), React.createElement("span", { className: styles.close, onClick: _this.cancelCommentting }, React.createElement("i", { className: "el-icon-close" }))), React.createElement(_postEditor2.default, { className: styles.commentEditor, toolBarClassName: styles.commentEditorToolbar, rawContent: "", placeholder: "输入评论" })), React.createElement("footer", null, React.createElement(_next.Button, { type: "primary" }, "\u53D1\u8868\u8BC4\u8BBA"))));
+                return React.createElement("div", { ref: _this.refPostBox, className: (0, _classnames2.default)([styles.commentPlaceholder], [styles.commentEditorWrapper]), suppressContentEditableWarning: true }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("span", { className: styles.avatar }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: user.nickname }, React.createElement("img", { src: user.avatar || defaultAvatar })))), React.createElement("div", { className: styles.commentEditBody }, React.createElement("ul", null, React.createElement("li", null, React.createElement("h3", null, React.createElement("i", { className: "icon fa fa-fw fa-reply" }), " ", React.createElement("span", null, topic.title))), React.createElement("span", { className: styles.close, onClick: _this.toggleCommentting.bind(_this, false) }, React.createElement("i", { className: "el-icon-close" }))), React.createElement(_postEditor2.default, { className: styles.commentEditor, toolBarClassName: styles.commentEditorToolbar, rawContent: editingPostRaw, placeholder: "输入评论", mentions: mentions, onChange: store.editPost })), React.createElement("footer", null, React.createElement(_next.Button, { type: "primary", disabled: postBtnDisabled }, "\u53D1\u8868\u8BC4\u8BBA"))));
             }
-            return React.createElement("div", { ref: _this.refPostBox, className: styles.commentPlaceholder }, function () {
+            return React.createElement("div", { ref: _this.refPostBox, className: styles.commentPlaceholder }, function (that) {
                 if (user && user.id) {
-                    return React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("span", { className: styles.avatar }, React.createElement("img", { src: user.avatar || defaultAvatar })), "\u8BF4\u70B9\u4EC0\u4E48..."));
+                    return React.createElement("div", { className: styles.inner }, React.createElement("header", { onClick: that.toggleCommentting.bind(that, true) }, React.createElement("span", { className: styles.avatar }, React.createElement("img", { src: user.avatar || defaultAvatar })), "\u8BF4\u70B9\u4EC0\u4E48..."));
                 } else {
                     return React.createElement("div", { className: styles.inner, onClick: showLoginAuthModal }, React.createElement("header", null, React.createElement("span", { className: styles.avatar }, React.createElement("img", { src: defaultAvatar })), "\u767B\u5F55\u4EE5\u53D1\u8868\u8BC4\u8BBA"));
                 }
-            }());
+            }(_this));
         };
         _this.state = {
             commentting: false
@@ -62129,8 +62219,16 @@ var PostEditor = function (_React$Component) {
             var json = JSON.stringify(raw);
             var html = (0, _draftjsToHtml2.default)(raw);
             var plainText = editorState.getCurrentContent().getPlainText();
+            var entities = Object.keys(raw.entityMap).map(function (key) {
+                return raw.entityMap[key];
+            });
+            var mentions = entities.filter(function (value) {
+                return value.type === "MENTION";
+            }).map(function (m) {
+                return m.data;
+            });
             if (onChange) {
-                onChange(json, html, plainText);
+                onChange(json, html, plainText, mentions);
             }
             _this.setState({
                 editorState: editorState
@@ -62168,9 +62266,10 @@ var PostEditor = function (_React$Component) {
                 readOnly = _props.readOnly,
                 placeholder = _props.placeholder,
                 className = _props.className,
-                toolBarClassName = _props.toolBarClassName;
+                toolBarClassName = _props.toolBarClassName,
+                mentions = _props.mentions;
 
-            return React.createElement("div", { className: (0, _classnames2.default)([styles.postEditor], _defineProperty({}, styles.readOnly, readOnly), [className]) }, React.createElement(_reactDraftWysiwyg.Editor, { readOnly: readOnly, editorState: editorState, toolbarClassName: (0, _classnames2.default)([styles.editorToolbar], [toolBarClassName]), wrapperClassName: styles.editorWrapper, editorClassName: styles.editor, onEditorStateChange: this.onEditorStateChange, placeholder: placeholder, toolbar: {
+            return React.createElement("div", { className: (0, _classnames2.default)([styles.postEditor], _defineProperty({}, styles.readOnly, readOnly), [className]), suppressContentEditableWarning: true }, React.createElement(_reactDraftWysiwyg.Editor, { readOnly: readOnly, editorState: editorState, toolbarClassName: (0, _classnames2.default)([styles.editorToolbar], [toolBarClassName]), wrapperClassName: styles.editorWrapper, editorClassName: styles.editor, onEditorStateChange: this.onEditorStateChange, placeholder: placeholder, toolbar: {
                     options: ["blockType", "colorPicker", "link", "emoji", "image", "list", "history"],
                     fontFamily: {
                         options: ["宋体", "微软雅黑", "黑体", "楷体_GB2312", "幼圆", "Arial", "Arial Black", "Comic Sans MS", "Georgia", "Times New Roman"]
@@ -62184,7 +62283,11 @@ var PostEditor = function (_React$Component) {
                     }
                 }, localization: {
                     locale: "zh"
-                } }));
+                }, mention: {
+                    separator: " ",
+                    trigger: "@",
+                    suggestions: mentions
+                }, autoFocus: true }));
         }
     }]);
 
@@ -62194,7 +62297,8 @@ var PostEditor = function (_React$Component) {
 exports.default = PostEditor;
 
 PostEditor.defaultProps = {
-    readOnly: false
+    readOnly: false,
+    mentions: []
 };
 
 /***/ }),
