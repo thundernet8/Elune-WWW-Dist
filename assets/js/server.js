@@ -6285,7 +6285,7 @@ exports.default = {
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && typeof window === "undefined";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -25054,6 +25054,7 @@ var TopicStore = function (_AbstractStore) {
         _this.editingPostHtml = "";
         _this.editingPostText = "";
         _this.editingPostMentions = [];
+        _this.submittingPost = false;
         _this.goComment = function () {
             var topic = _this.topic;
 
@@ -25068,6 +25069,57 @@ var TopicStore = function (_AbstractStore) {
                 value: value,
                 url: "#thread"
             }];
+        };
+        _this.goPost = function () {};
+        _this.createPost = function () {
+            var editingPostRaw = _this.editingPostRaw,
+                editingPostHtml = _this.editingPostHtml,
+                editingPostText = _this.editingPostText,
+                editingPostMentions = _this.editingPostMentions,
+                topic = _this.topic;
+
+            if (!editingPostRaw || !editingPostHtml || editingPostText) {
+                return Promise.reject(false);
+            }
+            var parentId = 0;
+            var mentions = [];
+            editingPostMentions.forEach(function (mention) {
+                var match1 = mention.value.match(/@([^#]+)$/);
+                if (match1 && match1.length > 1) {
+                    mentions.push(match1[1]);
+                    return;
+                }
+                var match2 = mention.value.match(/@(.+)#([0-9]+)$/);
+                if (match2 && match2.length > 2) {
+                    if (!parentId) {
+                        parentId = Number(match2[2]);
+                    }
+                    mentions.push(match2[1]);
+                }
+            });
+            mentions = Array.from(new Set(mentions));
+            _this.submittingPost = true;
+            return (0, _Post.CreatePost)({
+                topicId: topic.id,
+                parentId: parentId,
+                content: editingPostText,
+                contentHtml: editingPostHtml,
+                contentRaw: editingPostRaw,
+                topicOwner: topic.authorName,
+                topicOwnerId: topic.authorId,
+                mentions: mentions
+            }).then(function (resp) {
+                _this.setField("submittingPost", false);
+                _this.setField("editingPostRaw", "");
+                _this.setField("editingPostHtml", "");
+                _this.setField("editingPostText", "");
+                _this.setField("editingPostMentions", []);
+                _this.getPosts();
+                return resp;
+            }).catch(function (err) {
+                _this.setField("submittingPost", false);
+                throw new Error(err);
+            });
         };
         _this.editPost = function (raw, html, text, mentions) {
             _this.editingPostRaw = raw;
@@ -25249,7 +25301,10 @@ __decorate([_mobx.observable], TopicStore.prototype, "editingPostHtml", void 0);
 __decorate([_mobx.observable], TopicStore.prototype, "editingPostText", void 0);
 __decorate([_mobx.observable], TopicStore.prototype, "editingPostMentions", void 0);
 __decorate([_mobx.computed], TopicStore.prototype, "postBtnDisabled", null);
+__decorate([_mobx.observable], TopicStore.prototype, "submittingPost", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "goComment", void 0);
+__decorate([_mobx.action], TopicStore.prototype, "goPost", void 0);
+__decorate([_mobx.action], TopicStore.prototype, "createPost", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "editPost", void 0);
 
 /***/ }),
@@ -61991,6 +62046,21 @@ var TopicMain = function (_React$Component) {
                 commentting: status
             });
         };
+        _this.submitPost = function () {
+            var store = _this.props.store;
+
+            store.createPost().then(function () {
+                (0, _next.Message)({
+                    message: "发布评论成功",
+                    type: "success"
+                });
+            }).catch(function () {
+                (0, _next.Message)({
+                    message: "创建话题失败",
+                    type: "error"
+                });
+            });
+        };
         _this.renderMainThread = function () {
             var store = _this.props.store;
             var topic = store.topic;
@@ -62018,7 +62088,8 @@ var TopicMain = function (_React$Component) {
                 topic = store.topic,
                 mentions = store.mentions,
                 postBtnDisabled = store.postBtnDisabled,
-                editingPostRaw = store.editingPostRaw;
+                editingPostRaw = store.editingPostRaw,
+                submittingPost = store.submittingPost;
             var commentting = _this.state.commentting;
 
             var globalStore = _GlobalStore2.default.Instance;
@@ -62029,7 +62100,7 @@ var TopicMain = function (_React$Component) {
                 return null;
             }
             if (user && commentting) {
-                return React.createElement("div", { ref: _this.refPostBox, className: (0, _classnames2.default)([styles.commentPlaceholder], [styles.commentEditorWrapper]), suppressContentEditableWarning: true }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("span", { className: styles.avatar }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: user.nickname }, React.createElement("img", { src: user.avatar || defaultAvatar })))), React.createElement("div", { className: styles.commentEditBody }, React.createElement("ul", null, React.createElement("li", null, React.createElement("h3", null, React.createElement("i", { className: "icon fa fa-fw fa-reply" }), " ", React.createElement("span", null, topic.title))), React.createElement("span", { className: styles.close, onClick: _this.toggleCommentting.bind(_this, false) }, React.createElement("i", { className: "el-icon-close" }))), React.createElement(_postEditor2.default, { className: styles.commentEditor, toolBarClassName: styles.commentEditorToolbar, rawContent: editingPostRaw, placeholder: "输入评论", mentions: mentions, onChange: store.editPost })), React.createElement("footer", null, React.createElement(_next.Button, { type: "primary", disabled: postBtnDisabled }, "\u53D1\u8868\u8BC4\u8BBA"))));
+                return React.createElement("div", { ref: _this.refPostBox, className: (0, _classnames2.default)([styles.commentPlaceholder], [styles.commentEditorWrapper]), suppressContentEditableWarning: true }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("span", { className: styles.avatar }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: user.nickname }, React.createElement("img", { src: user.avatar || defaultAvatar })))), React.createElement("div", { className: styles.commentEditBody }, React.createElement("ul", null, React.createElement("li", null, React.createElement("h3", null, React.createElement("i", { className: "icon fa fa-fw fa-reply" }), " ", React.createElement("span", null, topic.title))), React.createElement("span", { className: styles.close, onClick: _this.toggleCommentting.bind(_this, false) }, React.createElement("i", { className: "el-icon-close" }))), React.createElement(_postEditor2.default, { className: styles.commentEditor, toolBarClassName: styles.commentEditorToolbar, rawContent: editingPostRaw, placeholder: "输入评论", mentions: mentions, onChange: store.editPost })), React.createElement("footer", null, React.createElement(_next.Button, { type: "primary", disabled: postBtnDisabled, onClick: _this.submitPost }, "\u53D1\u8868\u8BC4\u8BBA", submittingPost && React.createElement("i", { className: "el-icon-loading el-icon-right" })))));
             }
             return React.createElement("div", { ref: _this.refPostBox, className: styles.commentPlaceholder }, function (that) {
                 if (user && user.id) {
