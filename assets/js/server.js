@@ -6285,7 +6285,7 @@ exports.default = {
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && typeof window === "undefined";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -25119,6 +25119,9 @@ var TopicStore = function (_AbstractStore) {
         _this.postEditorStateChange = function (state) {
             _this.postEditorState = state;
         };
+        _this.cleanPostEditor = function () {
+            _this.postEditorState = _draftJs.EditorState.createEmpty();
+        };
         if (!_env.IS_NODE) {
             var initialState = window.__INITIAL_STATE__ || {};
             if (initialState && initialState.TopicStore) {
@@ -25345,6 +25348,7 @@ __decorate([_mobx.action], TopicStore.prototype, "goReply", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "createPost", void 0);
 __decorate([_mobx.observable], TopicStore.prototype, "postEditorState", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "postEditorStateChange", void 0);
+__decorate([_mobx.action], TopicStore.prototype, "cleanPostEditor", void 0);
 
 /***/ }),
 /* 207 */
