@@ -6285,7 +6285,7 @@ exports.default = {
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && typeof window === "undefined";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -60510,7 +60510,7 @@ var TopicItem = function (_React$Component) {
                 postTime = _props$topic.postTime,
                 poster = _props$topic.poster;
 
-            var latestPostTime = postTime ? (0, _DateTimeKit.getLocalDate)(new Date(postTime * 1000)) : null;
+            var latestPostTime = postTime ? new Date(postTime * 1000) : null;
             return React.createElement("div", { className: styles.topicItem }, React.createElement(_dropdown2.default, { className: (0, _classnames2.default)("btn-flat", [styles.actionDropdown]), anchorNode: React.createElement("span", { className: "btn-label" }, React.createElement("i", { className: "fa fa-fw fa-ellipsis-v" })) }, React.createElement(_dropdown2.default.Item, { hasIcon: true }, React.createElement("button", null, React.createElement("i", { className: "fa fa-fw fa-star" }), React.createElement("span", { className: "btn-label" }, "\u5173\u6CE8")))), React.createElement("div", { className: (0, _classnames2.default)([styles.content], _defineProperty({}, styles.read, read)) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + author.username, className: styles.author }, React.createElement(_next.Tooltip, { effect: "dark", placement: "bottom", content: author.nickname + " \u53D1\u5E03\u4E8E " + (0, _DateTimeKit.getLocalDate)(new Date(createTime * 1000)).toLocaleString() }, React.createElement("img", { className: styles.avatar, src: defaultAvatar }))), React.createElement("ul", { className: styles.badges }, !!isPinned && React.createElement("li", { className: "item-sticky" }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: "置顶" }, React.createElement("span", { className: (0, _classnames2.default)([styles.badge], [styles.sticky]) }, React.createElement("i", { className: "icon fa fa-fw fa-thumb-tack badge-icon" }))))), React.createElement(_reactRouterDom.Link, { to: "/topic/" + id, className: styles.main }, React.createElement("h3", { className: styles.title }, title), React.createElement("ul", { className: styles.info }, React.createElement("li", { className: styles.channels }, React.createElement("span", { className: styles.channelLabels }, React.createElement("span", { className: (0, _classnames2.default)([styles.channelLabel, styles.colored]), style: {
                     color: channel.color,
                     backgroundColor: channel.color
@@ -60519,7 +60519,7 @@ var TopicItem = function (_React$Component) {
                     return null;
                 }
                 return React.createElement("span", { key: index, className: (0, _classnames2.default)([styles.channelLabel], [styles.tagLabel]) }, React.createElement("span", { className: (0, _classnames2.default)([styles.channelLabelText], [styles.tagLabelText]) }, tag.title));
-            }))), latestPostTime && React.createElement("li", { className: styles.reply }, React.createElement("span", null, React.createElement("i", { className: "icon fa fa-fw fa-reply " }), React.createElement("span", { className: styles.username }, poster), " ", "\u56DE\u590D\u4E8E", " ", React.createElement("time", { "data-pubdate": "true", "data-datetime": latestPostTime.toISOString(), title: latestPostTime.toLocaleString() }, (0, _DateTimeKit.getTimeDiff)(latestPostTime)))), React.createElement("li", { className: styles.excerpt }, React.createElement("span", null, content.substr(0, 100), content.length > 100 ? "..." : "")))), React.createElement("span", { className: styles.count, title: "" }, React.createElement("i", { className: "fa fa-fw fa-comment" }), postsCount)));
+            }))), latestPostTime && React.createElement("li", { className: styles.reply }, React.createElement("span", null, React.createElement("i", { className: "icon fa fa-fw fa-reply " }), React.createElement("span", { className: styles.username }, poster), " ", "\u56DE\u590D\u4E8E", " ", React.createElement("time", { "data-pubdate": "true", title: latestPostTime ? (0, _DateTimeKit.getLocalDate)(latestPostTime).toLocaleString() : "" }, (0, _DateTimeKit.getTimeDiff)(latestPostTime)))), React.createElement("li", { className: styles.excerpt }, React.createElement("span", null, content.substr(0, 100), content.length > 100 ? "..." : "")))), React.createElement("span", { className: styles.count, title: "" }, React.createElement("i", { className: "fa fa-fw fa-comment" }), postsCount)));
         }
     }]);
 
