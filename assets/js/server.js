@@ -25124,8 +25124,8 @@ var TopicStore = function (_AbstractStore) {
         };
         if (!_env.IS_NODE) {
             var initialState = window.__INITIAL_STATE__ || {};
-            if (initialState && initialState.TopicStore) {
-                _this.fromJSON(initialState.TopicStore);
+            if (initialState && initialState.topicStore) {
+                _this.fromJSON(initialState.topicStore);
             } else {
                 _this.fetchData();
             }
@@ -28708,8 +28708,8 @@ var UCStore = function (_AbstractStore) {
         };
         if (!_env.IS_NODE) {
             var initialState = window.__INITIAL_STATE__ || {};
-            if (initialState && initialState.UCStore) {
-                _this.fromJSON(initialState.UCStore);
+            if (initialState && initialState.uCStore) {
+                _this.fromJSON(initialState.uCStore);
             } else {
                 _this.fetchData();
             }
