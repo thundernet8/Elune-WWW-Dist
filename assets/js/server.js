@@ -6286,7 +6286,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 var IS_PROD = exports.IS_PROD = "production" === "production";
-var IS_NODE = exports.IS_NODE = typeof module !== "undefined" && typeof module.exports !== "undefined";
+var IS_NODE = exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
 var API_BASE = exports.API_BASE = IS_PROD && !IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 var SSR_SERVER_HOST = exports.SSR_SERVER_HOST = IS_PROD ? "127.0.0.1" : "127.0.0.1";
 var SSR_SERVER_PORT = exports.SSR_SERVER_PORT = IS_PROD ? 9002 : 9002;
