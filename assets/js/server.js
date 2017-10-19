@@ -6282,15 +6282,14 @@ exports.default = {
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-var IS_PROD = exports.IS_PROD = "production" === "production";
-var IS_NODE = exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-var API_BASE = exports.API_BASE = IS_PROD && !IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
-var SSR_SERVER_HOST = exports.SSR_SERVER_HOST = IS_PROD ? "127.0.0.1" : "127.0.0.1";
-var SSR_SERVER_PORT = exports.SSR_SERVER_PORT = IS_PROD ? 9002 : 9002;
-var SESSION_COOKIE_NAME = exports.SESSION_COOKIE_NAME = "SESSIONID";
+exports.__esModule = true;
+exports.IS_PROD = "production" === "production";
+exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
+
+exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
+exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
+exports.SESSION_COOKIE_NAME = "SESSIONID";
 
 /***/ }),
 /* 15 */
@@ -25119,7 +25118,7 @@ var TopicStore = function (_AbstractStore) {
         _this.posts = [];
         _this.postTotal = -1;
         _this.setPosts = function (posts) {
-            _this.posts = posts.reverse();
+            _this.posts = posts;
         };
         _this.getPosts = function () {
             var keepExist = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
@@ -70540,7 +70539,7 @@ var TopicMain = function (_React$Component) {
             if (!loading && postsLoading) {
                 return React.createElement("div", { className: styles.postsLoading }, React.createElement("i", { className: "el-icon-loading" }));
             }
-            return React.createElement("div", { className: styles.postListWrapper }, React.createElement("ul", { className: styles.postList }, posts.map(function (post, index) {
+            return React.createElement("div", { className: styles.postListWrapper }, React.createElement("ul", { className: styles.postList }, posts.reverse().map(function (post, index) {
                 return React.createElement(_postItem2.default, { key: index, post: post, store: store, goReply: _this.goReply });
             })));
         };
