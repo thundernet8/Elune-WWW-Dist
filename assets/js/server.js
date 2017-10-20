@@ -7294,7 +7294,7 @@ if ((typeof __MOBX_DEVTOOLS_GLOBAL_HOOK__ === 'undefined' ? 'undefined' : _typeo
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -28566,10 +28566,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var sanitize = exports.sanitize = function sanitize(dirty) {
     return (0, _sanitizeHtml2.default)(dirty, {
-        allowTags: ["b", "i", "em", "strong", "a", "span"],
-        allowAttributes: {
-            a: ["href"]
-        }
+        allowedTags: ["h3", "h4", "h5", "h6", "blockquote", "p", "a", "ul", "ol", "nl", "li", "b", "i", "strong", "em", "strike", "code", "hr", "br", "div", "table", "thead", "caption", "tbody", "tr", "th", "td", "pre", "span"],
+        allowedAttributes: {
+            a: ["href", "name", "target", "data-*"],
+
+            img: ["src", "title"]
+        },
+
+        selfClosing: ["img", "br", "hr", "area", "base", "basefont", "input", "link", "meta"],
+
+        allowedSchemes: ["http", "https", "ftp", "mailto"],
+        allowedSchemesByTag: {},
+        allowProtocolRelative: true
     });
 };
 
