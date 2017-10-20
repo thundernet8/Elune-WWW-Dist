@@ -17790,7 +17790,7 @@ Object.defineProperty(exports, "__esModule", {
 var getTimeDiff = exports.getTimeDiff = function getTimeDiff(targetTime, sourceTime) {
     sourceTime = sourceTime || new Date();
     var tail = targetTime < sourceTime ? "前" : "后";
-    var seconds = Math.abs(Number(((targetTime.getTime() - sourceTime.getTime()) / 1000).toFixed(0)));
+    var seconds = Math.abs(Number(((targetTime.getTime() - sourceTime.getTime() + 8 * 3600000) / 1000).toFixed(0)));
     if (seconds < 60) {
         return "刚刚";
     }
