@@ -7294,7 +7294,7 @@ if ((typeof __MOBX_DEVTOOLS_GLOBAL_HOOK__ === 'undefined' ? 'undefined' : _typeo
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -25416,7 +25416,7 @@ var TopicStore = function (_AbstractStore) {
         };
         _this.goReply = function (post) {
             var value = post.authorName + "#" + post.id;
-            var raw = "{\"entityMap\":{\"0\":{\"type\":\"MENTION\",\"mutability\":\"IMMUTABLE\",\"data\":{\"text\":\"@" + value + "\",\"value\":\"" + value + "\",\"url\":\"#thread\"}}},\"blocks\":[{\"key\":\"ob2h\",\"text\":\"@" + value + " \",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[{\"offset\":0,\"length\":" + (value.length + 1) + ",\"key\":0}],\"data\":{}}]}";
+            var raw = "{\"entityMap\":{\"0\":{\"type\":\"MENTION\",\"mutability\":\"IMMUTABLE\",\"data\":{\"text\":\"@" + value + "\",\"value\":\"" + value + "\",\"url\":\"#post-" + post.id + "\"}}},\"blocks\":[{\"key\":\"ob2h\",\"text\":\"@" + value + " \",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[{\"offset\":0,\"length\":" + (value.length + 1) + ",\"key\":0}],\"data\":{}}]}";
             _this.postEditorState = _draftJs.EditorState.createWithContent((0, _draftJs.convertFromRaw)(JSON.parse(raw)));
         };
         _this.createPost = function () {
@@ -25446,6 +25446,12 @@ var TopicStore = function (_AbstractStore) {
                 }
             });
             mentions = Array.from(new Set(mentions));
+            if (mentions) {
+                console.dir(_this.mentions);
+                console.dir(editingPostRaw);
+                console.dir(mentions);
+                return Promise.reject(false);
+            }
             _this.submittingPost = true;
             return (0, _Post.CreatePost)({
                 topicId: topic.id,
@@ -28570,7 +28576,17 @@ var sanitize = exports.sanitize = function sanitize(dirty) {
         allowedAttributes: {
             a: ["href", "name", "target", "data-*"],
 
-            img: ["src", "title"]
+            img: ["src", "title"],
+            span: ["class"],
+            pre: ["class"],
+            code: ["class"],
+            p: ["class"],
+            div: ["class"],
+            table: ["class"],
+            tbody: ["class"],
+            ul: ["class"],
+            ol: ["class"],
+            li: ["class"]
         },
 
         selfClosing: ["img", "br", "hr", "area", "base", "basefont", "input", "link", "meta"],
@@ -74348,14 +74364,13 @@ var PostItem = function (_React$Component) {
             var topic = store.topic;
             var posts = store.posts;
 
-            console.log(post.contentHtml);
             var replies = posts.filter(function (x) {
-                return x.id === post.pid;
+                return x.pid === post.id;
             });
             return React.createElement("div", { className: styles.postItem, id: "post-" + post.id }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + post.authorName }, React.createElement(_charAvatar2.default, { className: styles.avatar, text: post.authorName[0] }), React.createElement("span", { className: styles.username }, post.authorName)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getLocalDate)(new Date(post.createTime * 1000)).toLocaleString() }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)(new Date(post.createTime * 1000))))), topic.authorId === post.authorId && React.createElement("li", { className: styles.idBadge }, React.createElement("span", null, "\u697C\u4E3B")))), React.createElement("div", { className: styles.postBody, dangerouslySetInnerHTML: {
                     __html: (0, _HtmlKit.sanitize)(post.contentHtml)
                 } }), React.createElement("aside", { className: styles.postActions }, React.createElement("ul", null, React.createElement("li", { className: styles.replyBtn }, React.createElement(_next.Button, { type: "text", onClick: this.goReply }, "\u56DE\u590D")))), React.createElement("footer", null, React.createElement("ul", null, !!replies && replies.length > 0 && replies.map(function (reply, index) {
-                return React.createElement("li", { key: index, className: styles.reply }, React.createElement("a", { href: "#post-" + reply.id }, React.createElement("i", { className: "icon fa fa-fw fa-reply" }), reply.authorName, " \u56DE\u590D\u4E86\u5B83"));
+                return React.createElement("li", { key: index, className: styles.reply }, React.createElement("a", { href: "#post-" + reply.id }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: React.createElement("div", { className: styles.replyTooltipContent }, reply.content.trim()), className: styles.replyTooltip }, React.createElement("i", { className: "icon fa fa-fw fa-reply" }), reply.authorName, " \u56DE\u590D\u4E86\u5B83")));
             })))));
         }
     }]);
@@ -76391,7 +76406,7 @@ module.exports = function (string) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"postItem":"__u5NLp","inner":"__144ap","idBadge":"__3GzRb","author":"__8rgtw","avatar":"__1Pdkt","postBody":"__2C8cs","postActions":"__2idQl"};
+module.exports = {"postItem":"__u5NLp","inner":"__144ap","idBadge":"__3GzRb","author":"__8rgtw","avatar":"__1Pdkt","postBody":"__2C8cs","postActions":"__2idQl","replyTooltip":"__2wIKP","replyTooltipContent":"__1eGNg"};
 
 /***/ }),
 /* 730 */
