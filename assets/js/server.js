@@ -28571,6 +28571,9 @@ var _sanitizeHtml2 = _interopRequireDefault(_sanitizeHtml);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var sanitize = exports.sanitize = function sanitize(dirty) {
+    if (dirty) {
+        return dirty;
+    }
     return (0, _sanitizeHtml2.default)(dirty, {
         allowedTags: ["h3", "h4", "h5", "h6", "blockquote", "p", "a", "ul", "ol", "nl", "li", "b", "i", "strong", "em", "strike", "code", "hr", "br", "div", "table", "thead", "caption", "tbody", "tr", "th", "td", "pre", "span"],
         allowedAttributes: {
