@@ -7294,7 +7294,7 @@ if ((typeof __MOBX_DEVTOOLS_GLOBAL_HOOK__ === 'undefined' ? 'undefined' : _typeo
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -25446,12 +25446,6 @@ var TopicStore = function (_AbstractStore) {
                 }
             });
             mentions = Array.from(new Set(mentions));
-            if (mentions) {
-                console.dir(_this.mentions);
-                console.dir(editingPostRaw);
-                console.dir(mentions);
-                return Promise.reject(false);
-            }
             _this.submittingPost = true;
             return (0, _Post.CreatePost)({
                 topicId: topic.id,
@@ -81911,7 +81905,7 @@ var UCAsideView = function (_React$Component) {
                 me = _props.me,
                 tab = _props.tab;
 
-            return React.createElement("nav", { className: styles.ucAsideView }, React.createElement("div", { className: styles.inner }, React.createElement("ul", { className: styles.menuList }, React.createElement("li", { className: (0, _classnames2.default)([styles.postsMenuItem], [styles.itemPosts], _defineProperty({}, styles.active, tab === "posts")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username }, React.createElement("i", { className: "fa fa-fw fa-comment-o" }), React.createElement("span", { className: styles.label }, "\u56DE\u590D", React.createElement("span", { className: styles.count }, user.postsCount)))), React.createElement("li", { className: (0, _classnames2.default)([styles.postsMenuItem], [styles.itemTopics], _defineProperty({}, styles.active, tab === "topics")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/topics" }, React.createElement("i", { className: "fa fa-fw fa-reorder" }), React.createElement("span", { className: styles.label }, "\u8BDD\u9898", React.createElement("span", { className: styles.count }, user.topicCount)))), React.createElement("li", { className: (0, _classnames2.default)([styles.postsMenuItem], [styles.itemMentions], _defineProperty({}, styles.active, tab === "mentions")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/mentions" }, React.createElement("i", { className: "fa fa-fw fa-at" }), React.createElement("span", { className: styles.label }, "\u63D0\u5230\u7528\u6237"))), me && me.id > 0 && React.createElement("li", { className: (0, _classnames2.default)([styles.postsMenuItem], [styles.itemSettings], _defineProperty({}, styles.active, tab === "settings")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/settings" }, React.createElement("i", { className: "fa fa-fw fa-cog" }), React.createElement("span", { className: styles.label }, "\u4E2A\u4EBA\u8BBE\u7F6E"))))));
+            return React.createElement("nav", { className: styles.ucAsideView }, React.createElement("div", { className: styles.inner }, React.createElement("ul", { className: styles.menuList }, React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemPosts], _defineProperty({}, styles.active, tab === "posts")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username }, React.createElement("i", { className: "fa fa-fw fa-comment-o" }), React.createElement("span", { className: styles.label }, "\u56DE\u590D", React.createElement("span", { className: styles.count }, user.postsCount || 0)))), React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemTopics], _defineProperty({}, styles.active, tab === "topics")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/topics" }, React.createElement("i", { className: "fa fa-fw fa-reorder" }), React.createElement("span", { className: styles.label }, "\u8BDD\u9898", React.createElement("span", { className: styles.count }, user.topicsCount || 0)))), React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemMentions], _defineProperty({}, styles.active, tab === "mentions")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/mentions" }, React.createElement("i", { className: "fa fa-fw fa-at" }), React.createElement("span", { className: styles.label }, "\u63D0\u5230\u7528\u6237"))), me && me.id > 0 && me.id === user.id && React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemFavorites], _defineProperty({}, styles.active, tab === "favorites")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/favorites" }, React.createElement("i", { className: "fa fa-fw fa-star-o" }), React.createElement("span", { className: styles.label }, "\u6536\u85CF", React.createElement("span", { className: styles.count }, user.favoritesCount || 0)))), me && me.id > 0 && me.id === user.id && React.createElement("li", { className: (0, _classnames2.default)([styles.settingsMenuItem], [styles.itemSettings], _defineProperty({}, styles.active, tab === "settings")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/settings" }, React.createElement("i", { className: "fa fa-fw fa-cog" }), React.createElement("span", { className: styles.label }, "\u4E2A\u4EBA\u8BBE\u7F6E"))))));
         }
     }]);
 
