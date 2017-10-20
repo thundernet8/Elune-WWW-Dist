@@ -17812,7 +17812,7 @@ var getLocalDate = exports.getLocalDate = function getLocalDate(gmtDate) {
 };
 var getGMT8Date = exports.getGMT8Date = function getGMT8Date(gmtDate) {
     var offset = 8 * 3600 * 1000;
-    return new Date(gmtDate.getTime() - offset);
+    return new Date(gmtDate.getTime() + offset);
 };
 
 /***/ }),
