@@ -36458,7 +36458,7 @@ var RenderInBody = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (RenderInBody.__proto__ || Object.getPrototypeOf(RenderInBody)).apply(this, arguments));
 
         _this.renderLayer = function () {
-            _reactDom2.default.render(React.createElement("div", Object.assign({}, _this.props), _this.props.children), _this.popup);
+            _reactDom2.default.hydrate(React.createElement("div", Object.assign({}, _this.props), _this.props.children), _this.popup);
         };
         return _this;
     }
@@ -74405,8 +74405,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var PureHtmlContent = function (_React$PureComponent) {
-    _inherits(PureHtmlContent, _React$PureComponent);
+var PureHtmlContent = function (_React$Component) {
+    _inherits(PureHtmlContent, _React$Component);
 
     function PureHtmlContent(props) {
         _classCallCheck(this, PureHtmlContent);
@@ -74432,7 +74432,7 @@ var PureHtmlContent = function (_React$PureComponent) {
     }]);
 
     return PureHtmlContent;
-}(React.PureComponent);
+}(React.Component);
 
 exports.default = PureHtmlContent;
 
