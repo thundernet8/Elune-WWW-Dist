@@ -28580,7 +28580,7 @@ var sanitize = exports.sanitize = function sanitize(dirty) {
         allowedAttributes: {
             a: ["href", "name", "target", "data-*"],
 
-            img: ["src", "title"],
+            img: ["src", "title", "alt", "style"],
             span: ["class"],
             pre: ["class"],
             code: ["class"],
