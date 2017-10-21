@@ -74367,7 +74367,7 @@ var PostItem = function (_React$Component) {
             var replies = posts.filter(function (x) {
                 return x.pid === post.id;
             });
-            return React.createElement("div", { className: styles.postItem, id: "post-" + post.id }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + post.authorName }, React.createElement(_charAvatar2.default, { className: styles.avatar, text: post.authorName[0] }), React.createElement("span", { className: styles.username }, post.authorName)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)(new Date(post.createTime * 1000)) }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)(new Date(post.createTime * 1000))))), topic.authorId === post.authorId && React.createElement("li", { className: styles.idBadge }, React.createElement("span", null, "\u697C\u4E3B")))), React.createElement(_pureHtmlContent2.default, { html: post.contentHtml }), React.createElement("aside", { className: styles.postActions }, React.createElement("ul", null, React.createElement("li", { className: styles.replyBtn }, React.createElement(_next.Button, { type: "text", onClick: this.goReply }, "\u56DE\u590D")))), React.createElement("footer", null, React.createElement("ul", null, !!replies && replies.length > 0 && replies.map(function (reply, index) {
+            return React.createElement("div", { className: styles.postItem, id: "post-" + post.id }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + post.authorName }, React.createElement(_charAvatar2.default, { className: styles.avatar, text: post.authorName[0] }), React.createElement("span", { className: styles.username }, post.authorName)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)(new Date(post.createTime * 1000)) }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)(new Date(post.createTime * 1000))))), topic.authorId === post.authorId && React.createElement("li", { className: styles.idBadge }, React.createElement("span", null, "\u697C\u4E3B")))), React.createElement("div", { className: styles.postBody }, React.createElement(_pureHtmlContent2.default, { html: post.contentHtml })), React.createElement("aside", { className: styles.postActions }, React.createElement("ul", null, React.createElement("li", { className: styles.replyBtn }, React.createElement(_next.Button, { type: "text", onClick: this.goReply }, "\u56DE\u590D")))), React.createElement("footer", null, React.createElement("ul", null, !!replies && replies.length > 0 && replies.map(function (reply, index) {
                 return React.createElement("li", { key: index, className: styles.reply }, React.createElement("a", { href: "#post-" + reply.id }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: React.createElement("div", { className: styles.replyTooltipContent }, reply.content.trim()), className: styles.replyTooltip }, React.createElement("i", { className: "icon fa fa-fw fa-reply" }), reply.authorName, " \u56DE\u590D\u4E86\u5B83")));
             })))));
         }
@@ -74415,6 +74415,11 @@ var PureHtmlContent = function (_React$PureComponent) {
     }
 
     _createClass(PureHtmlContent, [{
+        key: "shouldComponentUpdate",
+        value: function shouldComponentUpdate() {
+            return false;
+        }
+    }, {
         key: "render",
         value: function render() {
             var html = this.props.html;
