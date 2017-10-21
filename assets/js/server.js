@@ -74422,6 +74422,7 @@ var PureHtmlContent = function (_React$PureComponent) {
     }, {
         key: "render",
         value: function render() {
+            console.log("render PureHtmlContent");
             var html = this.props.html;
 
             return React.createElement("div", { dangerouslySetInnerHTML: {
