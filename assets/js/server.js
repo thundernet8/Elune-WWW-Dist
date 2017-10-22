@@ -17819,7 +17819,7 @@ var getLocalDate = exports.getLocalDate = function getLocalDate(gmtDate) {
 };
 var getGMT8DateStr = exports.getGMT8DateStr = function getGMT8DateStr(date) {
     var newDate = new Date(date.getTime() + 8 * 3600000);
-    return newDate.getUTCFullYear() + "/" + (newDate.getUTCMonth() + 101).toString().substr(1) + "/" + (newDate.getUTCDate() + 100).toString().substr(1) + " " + (newDate.getUTCHours() + 100).toString().substr(1) + ":" + (newDate.getUTCMinutes() + 100).toString().substr(1) + ":" + (newDate.getUTCSeconds() + 100).toString().substr(1);
+    return newDate.getUTCFullYear() + "/" + (newDate.getUTCMonth() + 101).toString().substr(1) + "/" + (newDate.getUTCDate() + 100).toString().substr(1) + " " + (newDate.getUTCHours() + 108).toString().substr(1) + ":" + (newDate.getUTCMinutes() + 100).toString().substr(1) + ":" + (newDate.getUTCSeconds() + 100).toString().substr(1);
 };
 
 /***/ }),
