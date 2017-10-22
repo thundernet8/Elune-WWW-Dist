@@ -74206,7 +74206,7 @@ var TopicMain = function (_React$Component) {
                 return React.createElement("div", { className: styles.postsLoading }, React.createElement("i", { className: "el-icon-loading" }));
             }
             return React.createElement("div", { className: styles.postListWrapper }, React.createElement("ul", { className: styles.postList }, posts.reverse().map(function (post, index) {
-                return React.createElement(_postItem2.default, { key: index, post: post, store: store, goReply: _this.goReply });
+                return React.createElement("li", { id: "reply" + index }, React.createElement(_postItem2.default, { key: index, post: post, store: store, goReply: _this.goReply }));
             })));
         };
         _this.renderPostBox = function () {
