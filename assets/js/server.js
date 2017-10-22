@@ -7507,7 +7507,7 @@ __decorate([_mobx.action], GlobalStore.prototype, "setBulletion", void 0);
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -32388,7 +32388,7 @@ var UCStore = function (_AbstractStore) {
             var username = _this.Match.params.username;
 
             _this.loading = true;
-            return (0, _User.FetchUser)({ username: username }).then(function (resp) {
+            return (0, _User.FetchNamedUser)({ username: username }).then(function (resp) {
                 _this.setField("user", resp || {});
                 _this.setField("loading", false);
             });
@@ -81998,7 +81998,7 @@ UCEntry.STORE_CLASSES = [_GlobalStore2.default, _UCStore2.default];
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.FetchUser = FetchUser;
+exports.FetchNamedUser = FetchNamedUser;
 
 var _WebApi = __webpack_require__(49);
 
@@ -82006,11 +82006,11 @@ var _WebApi2 = _interopRequireDefault(_WebApi);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function FetchUser(payload) {
-    return _WebApi2.default.Get("users/name/" + payload.username, {});
+function FetchNamedUser(payload) {
+    return _WebApi2.default.Post("users/name/" + payload.username, {});
 }
 exports.default = {
-    FetchUser: FetchUser
+    FetchNamedUser: FetchNamedUser
 };
 
 /***/ }),
