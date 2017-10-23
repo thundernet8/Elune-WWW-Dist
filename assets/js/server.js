@@ -7507,7 +7507,7 @@ __decorate([_mobx.action], GlobalStore.prototype, "setBulletion", void 0);
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -82007,7 +82007,7 @@ var _WebApi2 = _interopRequireDefault(_WebApi);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function FetchNamedUser(payload) {
-    return _WebApi2.default.Post("users/name/" + payload.username, {});
+    return _WebApi2.default.Post("users/name", payload);
 }
 exports.default = {
     FetchNamedUser: FetchNamedUser
