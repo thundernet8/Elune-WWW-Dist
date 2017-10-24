@@ -16084,6 +16084,19 @@ var Header = function (_React$Component) {
         _this.logout = function () {
             _GlobalStore2.default.Instance.requestLogout().then(function () {});
         };
+        _this.inputSearch = function (e) {
+            _this.setState({
+                search: e.target.value
+            });
+        };
+        _this.onSearchInputEnter = function (e) {
+            var search = _this.state.search;
+
+            if (!search || e.key !== "Enter") {
+                return;
+            }
+            window.open("http://zhannei.baidu.com/cse/search?s=5364907993723678649&entry=1&plate_url=" + encodeURIComponent(window.location.href) + "&t=" + Math.ceil(new Date().getTime() / 3600000).toString() + "&q=" + search);
+        };
         _this.renderSession = function () {
             var globalStore = _GlobalStore2.default.Instance;
             var user = globalStore.user;
@@ -16091,6 +16104,9 @@ var Header = function (_React$Component) {
                 return null;
             }
             return React.createElement("li", { className: styles.itemSession }, React.createElement(_dropdown2.default, { className: styles.sessionDropdown, anchorNode: React.createElement("span", { className: "btn-label" }, user.avatar ? React.createElement("span", { className: styles.avatar }, React.createElement("img", { src: user.avatar })) : React.createElement(_charAvatar2.default, { className: styles.avatar, text: user.username[0] }), user.username) }, React.createElement(_dropdown2.default.Item, { hasIcon: true }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username }, React.createElement("i", { className: "fa fa-fw fa-user" }), React.createElement("span", { className: "btn-label" }, "\u6211\u7684\u8D44\u6599"))), React.createElement(_dropdown2.default.Item, { hasIcon: true }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/settings" }, React.createElement("i", { className: "fa fa-fw fa-cog" }), React.createElement("span", { className: "btn-label" }, "\u4E2A\u4EBA\u8BBE\u7F6E"))), React.createElement(_dropdown2.default.Divider, null), React.createElement(_dropdown2.default.Item, { hasIcon: true }, React.createElement(_next.Button, { type: "primary", onClick: _this.logout, className: styles.logoutBtn }, React.createElement("i", { className: "fa fa-fw fa-sign-out" }), React.createElement("span", { className: "btn-label" }, "\u767B\u51FA")))));
+        };
+        _this.state = {
+            search: ""
         };
         return _this;
     }
@@ -16101,7 +16117,7 @@ var Header = function (_React$Component) {
             var globalStore = _GlobalStore2.default.Instance;
             var user = globalStore.user;
             var logged = user && user.id > 0;
-            return React.createElement(_reactHeadroom2.default, null, React.createElement("header", { id: "header", className: styles.appHeader }, React.createElement("div", { className: (0, _classnames2.default)("container", [styles.container]) }, React.createElement("h1", { className: styles.headerTitle }, React.createElement("a", { href: "/" }, "Elune Forum")), React.createElement("div", { className: styles.headerPrimary }, React.createElement("ul", { className: styles.headerControls }, React.createElement("li", null, React.createElement("a", { href: "/", className: (0, _classnames2.default)("btn btn--link", [styles.btnLink]) }, React.createElement("i", { className: "fa fa-home" }), "\u9996\u9875")))), React.createElement("div", { className: styles.headerSecondary }, React.createElement("ul", { className: styles.headerControls }, React.createElement("li", { className: styles.itemSearch }, React.createElement("div", { className: styles.search }, React.createElement("div", { className: styles.searchInput }, React.createElement("input", { id: "bdcsMain", className: "form-control", placeholder: "搜索其实很简单" })), React.createElement("ul", { className: styles.searchResults }))), !logged && React.createElement("li", { className: styles.itemSignup }, React.createElement(_next.Button, { className: (0, _classnames2.default)("btn btn--link", [styles.btnLink]), type: "primary", title: "注册", onClick: this.switchAuthType.bind(this, _Auth.AuthType.Register) }, React.createElement("span", { className: styles.btnLabel }, "\u6CE8\u518C"))), !logged && React.createElement("li", { className: styles.itemSignin }, React.createElement(_next.Button, { className: (0, _classnames2.default)("btn btn--link", [styles.btnLink]), type: "primary", title: "登录", onClick: this.switchAuthType.bind(this, _Auth.AuthType.Login) }, React.createElement("span", { className: styles.btnLabel }, "\u767B\u5F55"))), this.renderSession()))), React.createElement(_authModal2.default, null)));
+            return React.createElement(_reactHeadroom2.default, null, React.createElement("header", { id: "header", className: styles.appHeader }, React.createElement("div", { className: (0, _classnames2.default)("container", [styles.container]) }, React.createElement("h1", { className: styles.headerTitle }, React.createElement("a", { href: "/" }, "Elune Forum")), React.createElement("div", { className: styles.headerPrimary }, React.createElement("ul", { className: styles.headerControls }, React.createElement("li", null, React.createElement("a", { href: "/", className: (0, _classnames2.default)("btn btn--link", [styles.btnLink]) }, React.createElement("i", { className: "fa fa-home" }), "\u9996\u9875")))), React.createElement("div", { className: styles.headerSecondary }, React.createElement("ul", { className: styles.headerControls }, React.createElement("li", { className: styles.itemSearch }, React.createElement("div", { className: styles.search }, React.createElement("div", { className: styles.searchInput }, React.createElement("input", { id: "bdcsMain", className: "form-control", placeholder: "搜索其实很简单", onKeyPress: this.onSearchInputEnter, onChange: this.inputSearch })), React.createElement("ul", { className: styles.searchResults }))), !logged && React.createElement("li", { className: styles.itemSignup }, React.createElement(_next.Button, { className: (0, _classnames2.default)("btn btn--link", [styles.btnLink]), type: "primary", title: "注册", onClick: this.switchAuthType.bind(this, _Auth.AuthType.Register) }, React.createElement("span", { className: styles.btnLabel }, "\u6CE8\u518C"))), !logged && React.createElement("li", { className: styles.itemSignin }, React.createElement(_next.Button, { className: (0, _classnames2.default)("btn btn--link", [styles.btnLink]), type: "primary", title: "登录", onClick: this.switchAuthType.bind(this, _Auth.AuthType.Login) }, React.createElement("span", { className: styles.btnLabel }, "\u767B\u5F55"))), this.renderSession()))), React.createElement(_authModal2.default, null)));
         }
     }]);
 
@@ -22544,7 +22560,7 @@ var Dropdown = function (_React$Component) {
             }, 200);
         };
         _this.state = {
-            open: true
+            open: false
         };
         return _this;
     }
