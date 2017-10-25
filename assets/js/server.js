@@ -7248,7 +7248,7 @@ module.exports = warning;
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -24935,7 +24935,7 @@ var TopicItem = function (_React$Component) {
                     return null;
                 }
                 return React.createElement("span", { key: index, className: (0, _classnames2.default)([styles.channelLabel], [styles.tagLabel]) }, React.createElement("span", { className: (0, _classnames2.default)([styles.channelLabelText], [styles.tagLabelText]) }, tag.title));
-            }))), latestPostTime && React.createElement("li", { className: styles.reply }, React.createElement("span", null, React.createElement("i", { className: "icon fa fa-fw fa-reply " }), React.createElement("span", { className: styles.username }, poster), " ", "\u56DE\u590D\u4E8E", " ", React.createElement("time", { "data-pubdate": "true", title: latestPostTime ? (0, _DateTimeKit.getGMT8DateStr)(latestPostTime) : "" }, (0, _DateTimeKit.getTimeDiff)(latestPostTime)))), React.createElement("li", { className: styles.excerpt }, React.createElement("span", null, content.substr(0, 100), content.length > 100 ? "..." : "")))), React.createElement("span", { className: styles.count, title: "" }, React.createElement("i", { className: "fa fa-fw fa-comment" }), postsCount)));
+            }))), latestPostTime && poster && React.createElement("li", { className: styles.reply }, React.createElement("span", null, React.createElement("i", { className: "icon fa fa-fw fa-reply " }), React.createElement("span", { className: styles.username }, poster), " ", "\u56DE\u590D\u4E8E", " ", React.createElement("time", { "data-pubdate": "true", title: latestPostTime ? (0, _DateTimeKit.getGMT8DateStr)(latestPostTime) : "" }, (0, _DateTimeKit.getTimeDiff)(latestPostTime)))), React.createElement("li", { className: styles.excerpt }, React.createElement("span", null, content.substr(0, 100), content.length > 100 ? "..." : "")))), React.createElement("span", { className: styles.count, title: "" }, React.createElement("i", { className: "fa fa-fw fa-comment" }), postsCount)));
         }
     }]);
 
