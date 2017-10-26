@@ -7462,7 +7462,7 @@ module.exports = warning;
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -32996,14 +32996,16 @@ var UCStore = function (_AbstractStore) {
                 topics = this.topics,
                 posts = this.posts,
                 topicsTotal = this.topicsTotal,
-                postsTotal = this.postsTotal;
+                postsTotal = this.postsTotal,
+                userProfileSettings = this.userProfileSettings;
 
             return Object.assign(obj, {
                 user: user,
                 topics: topics,
                 posts: posts,
                 topicsTotal: topicsTotal,
-                postsTotal: postsTotal
+                postsTotal: postsTotal,
+                userProfileSettings: userProfileSettings
             });
         }
     }, {
@@ -33017,7 +33019,8 @@ var UCStore = function (_AbstractStore) {
                 topics = json.topics,
                 posts = json.posts,
                 topicsTotal = json.topicsTotal,
-                postsTotal = json.postsTotal;
+                postsTotal = json.postsTotal,
+                userProfileSettings = json.userProfileSettings;
 
             if (typeof user !== "undefined") {
                 this.setField("user", user);
@@ -33033,6 +33036,9 @@ var UCStore = function (_AbstractStore) {
             }
             if (typeof postsTotal !== "undefined") {
                 this.setField("postsTotal", postsTotal);
+            }
+            if (typeof userProfileSettings !== "undefined") {
+                this.setField("userProfileSettings", userProfileSettings);
             }
             return this;
         }
