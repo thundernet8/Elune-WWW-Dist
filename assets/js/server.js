@@ -83194,6 +83194,12 @@ var _mobxReact = __webpack_require__(11);
 
 var _next = __webpack_require__(17);
 
+var _GlobalStore = __webpack_require__(13);
+
+var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -83245,7 +83251,8 @@ var SettingsTab = function (_React$Component) {
             var userProfileSettings = store.userProfileSettings,
                 user = store.user;
 
-            if (user && !userProfileSettings) {
+            var me = _GlobalStore2.default.Instance.user;
+            if (me && user && me.id === user.id && !userProfileSettings) {
                 store.setProfileSettings(user);
             }
         }
