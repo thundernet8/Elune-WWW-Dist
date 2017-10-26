@@ -7461,7 +7461,7 @@ __decorate([_mobx.action], GlobalStore.prototype, "setBulletion", void 0);
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -82642,7 +82642,10 @@ var UCView = function (_React$Component) {
                 history = _props2.history;
             var tab = match.params.tab;
 
-            if (["mentions", "topics", "posts", "favorites1", "settings"].indexOf(tab) < 0) {
+            if (!tab) {
+                return;
+            }
+            if (["mentions", "topics", "posts", "favorites", "settings"].indexOf(tab) < 0) {
                 history.push("/404");
             }
         }
