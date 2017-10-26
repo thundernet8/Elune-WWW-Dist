@@ -83251,10 +83251,11 @@ var SettingsTab = function (_React$Component) {
             var userProfileSettings = store.userProfileSettings,
                 user = store.user;
 
-            var me = _GlobalStore2.default.Instance.user;
-            if (me && user && me.id === user.id && !userProfileSettings) {
-                store.setProfileSettings(user);
-            }
+            _GlobalStore2.default.Instance.userPromise.then(function (me) {
+                if (user && me.id === user.id && !userProfileSettings) {
+                    store.setProfileSettings(user);
+                }
+            });
         }
     }, {
         key: "render",
