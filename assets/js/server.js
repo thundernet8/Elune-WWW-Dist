@@ -7461,7 +7461,7 @@ __decorate([_mobx.action], GlobalStore.prototype, "setBulletion", void 0);
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -82635,18 +82635,31 @@ var UCView = function (_React$Component) {
             }
         }
     }, {
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            var _props2 = this.props,
+                match = _props2.match,
+                history = _props2.history;
+            var tab = match.params.tab;
+
+            if (["mentions", "topics", "posts", "favorites1", "settings"].indexOf(tab) < 0) {
+                history.push("/404");
+            }
+        }
+    }, {
         key: "render",
         value: function render() {
             var user = this.store.user;
 
             var globalStore = _GlobalStore2.default.Instance;
             var me = globalStore.user;
-            var _props$match$params = this.props.match.params,
-                tab = _props$match$params.tab,
-                username = _props$match$params.username;
+            var match = this.props.match;
+            var _match$params = match.params,
+                tab = _match$params.tab,
+                username = _match$params.username;
 
             tab = (tab || "posts").toLowerCase();
-            if (["mentions", "topics", "posts", "settings"].indexOf(tab) < 0) {
+            if (["mentions", "topics", "posts", "favorites", "settings"].indexOf(tab) < 0) {
                 return null;
             }
             var meta = {
