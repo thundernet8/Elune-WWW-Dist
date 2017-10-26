@@ -32753,11 +32753,7 @@ var UCStore = function (_AbstractStore) {
                             });
                         }
                     case "settings":
-                        _this.setField("userProfileSettings", {
-                            nickname: resp.nickname,
-                            bio: resp.bio,
-                            url: resp.url
-                        });
+                        _this.setProfileSettings(resp);
                         break;
                     default:
                         return Promise.resolve(true);
@@ -32950,6 +32946,13 @@ var UCStore = function (_AbstractStore) {
 
             _this.userProfileSettings = Object.assign({}, userProfileSettings, _defineProperty({}, field, value));
         };
+        _this.setProfileSettings = function (user) {
+            _this.userProfileSettings = {
+                nickname: user.nickname,
+                bio: user.bio,
+                url: user.url
+            };
+        };
         _this.profileSaving = false;
         _this.saveProfile = function () {
             var userProfileSettings = _this.userProfileSettings,
@@ -32996,16 +32999,14 @@ var UCStore = function (_AbstractStore) {
                 topics = this.topics,
                 posts = this.posts,
                 topicsTotal = this.topicsTotal,
-                postsTotal = this.postsTotal,
-                userProfileSettings = this.userProfileSettings;
+                postsTotal = this.postsTotal;
 
             return Object.assign(obj, {
                 user: user,
                 topics: topics,
                 posts: posts,
                 topicsTotal: topicsTotal,
-                postsTotal: postsTotal,
-                userProfileSettings: userProfileSettings
+                postsTotal: postsTotal
             });
         }
     }, {
@@ -33019,8 +33020,7 @@ var UCStore = function (_AbstractStore) {
                 topics = json.topics,
                 posts = json.posts,
                 topicsTotal = json.topicsTotal,
-                postsTotal = json.postsTotal,
-                userProfileSettings = json.userProfileSettings;
+                postsTotal = json.postsTotal;
 
             if (typeof user !== "undefined") {
                 this.setField("user", user);
@@ -33036,9 +33036,6 @@ var UCStore = function (_AbstractStore) {
             }
             if (typeof postsTotal !== "undefined") {
                 this.setField("postsTotal", postsTotal);
-            }
-            if (typeof userProfileSettings !== "undefined") {
-                this.setField("userProfileSettings", userProfileSettings);
             }
             return this;
         }
@@ -33146,6 +33143,7 @@ __decorate([_mobx.action], UCStore.prototype, "getNextPageFavorites", void 0);
 __decorate([_mobx.action], UCStore.prototype, "refreshFavorites", void 0);
 __decorate([_mobx.observable], UCStore.prototype, "userProfileSettings", void 0);
 __decorate([_mobx.action], UCStore.prototype, "inputProfileSettings", void 0);
+__decorate([_mobx.action], UCStore.prototype, "setProfileSettings", void 0);
 __decorate([_mobx.observable], UCStore.prototype, "profileSaving", void 0);
 __decorate([_mobx.action], UCStore.prototype, "saveProfile", void 0);
 
@@ -83241,6 +83239,17 @@ var SettingsTab = function (_React$Component) {
     }
 
     _createClass(SettingsTab, [{
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            var store = this.props.store;
+            var userProfileSettings = store.userProfileSettings,
+                user = store.user;
+
+            if (user && !userProfileSettings) {
+                store.setProfileSettings(user);
+            }
+        }
+    }, {
         key: "render",
         value: function render() {
             var store = this.props.store;
