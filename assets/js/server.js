@@ -7174,75 +7174,6 @@ function deepMerge(target, source) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/**
- * Copyright 2014-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
-
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var __DEV__ = "production" !== 'production';
-
-var warning = function() {};
-
-if (__DEV__) {
-  warning = function(condition, format, args) {
-    var len = arguments.length;
-    args = new Array(len > 2 ? len - 2 : 0);
-    for (var key = 2; key < len; key++) {
-      args[key - 2] = arguments[key];
-    }
-    if (format === undefined) {
-      throw new Error(
-        '`warning(condition, format, ...args)` requires a warning ' +
-        'message argument'
-      );
-    }
-
-    if (format.length < 10 || (/^[s\W]*$/).test(format)) {
-      throw new Error(
-        'The warning format should be able to uniquely identify this ' +
-        'warning. Please, use a more descriptive format than: ' + format
-      );
-    }
-
-    if (!condition) {
-      var argIndex = 0;
-      var message = 'Warning: ' +
-        format.replace(/%s/g, function() {
-          return args[argIndex++];
-        });
-      if (typeof console !== 'undefined') {
-        console.error(message);
-      }
-      try {
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
-        throw new Error(message);
-      } catch(x) {}
-    }
-  };
-}
-
-module.exports = warning;
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
 
 
 Object.defineProperty(exports, "__esModule", {
@@ -7343,12 +7274,12 @@ var GlobalStore = function (_AbstractStore) {
         _this.init = function () {
             _this.checkMe();
         };
-
         _this.checkMe = function () {
-            return (0, _Auth.WhoAmI)().then(function (resp) {
+            _this.userPromise = (0, _Auth.WhoAmI)().then(function (resp) {
                 _this.setUser(resp.result);
-                return resp;
+                return resp.result;
             });
+            return _this.userPromise;
         };
         if (!_env.IS_NODE) {
             var initialState = window.__INITIAL_STATE__ || {};
@@ -7450,6 +7381,76 @@ __decorate([_mobx.action], GlobalStore.prototype, "showLoginAuthModal", void 0);
 __decorate([_mobx.action], GlobalStore.prototype, "closeAuthModal", void 0);
 __decorate([_mobx.observable], GlobalStore.prototype, "bannerMsg", void 0);
 __decorate([_mobx.action], GlobalStore.prototype, "setBulletion", void 0);
+__decorate([_mobx.observable], GlobalStore.prototype, "userPromise", void 0);
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright 2014-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var __DEV__ = "production" !== 'production';
+
+var warning = function() {};
+
+if (__DEV__) {
+  warning = function(condition, format, args) {
+    var len = arguments.length;
+    args = new Array(len > 2 ? len - 2 : 0);
+    for (var key = 2; key < len; key++) {
+      args[key - 2] = arguments[key];
+    }
+    if (format === undefined) {
+      throw new Error(
+        '`warning(condition, format, ...args)` requires a warning ' +
+        'message argument'
+      );
+    }
+
+    if (format.length < 10 || (/^[s\W]*$/).test(format)) {
+      throw new Error(
+        'The warning format should be able to uniquely identify this ' +
+        'warning. Please, use a more descriptive format than: ' + format
+      );
+    }
+
+    if (!condition) {
+      var argIndex = 0;
+      var message = 'Warning: ' +
+        format.replace(/%s/g, function() {
+          return args[argIndex++];
+        });
+      if (typeof console !== 'undefined') {
+        console.error(message);
+      }
+      try {
+        // This error was thrown as a convenience so that you can use this stack
+        // to find the callsite that caused this warning to fire.
+        throw new Error(message);
+      } catch(x) {}
+    }
+  };
+}
+
+module.exports = warning;
+
 
 /***/ }),
 /* 15 */
@@ -7461,7 +7462,7 @@ __decorate([_mobx.action], GlobalStore.prototype, "setBulletion", void 0);
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -16029,7 +16030,7 @@ var _dropdown = __webpack_require__(172);
 
 var _dropdown2 = _interopRequireDefault(_dropdown);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -17238,7 +17239,7 @@ if (false) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
@@ -18535,7 +18536,7 @@ var locationsAreEqual = exports.locationsAreEqual = function locationsAreEqual(a
 
 exports.__esModule = true;
 
-var _warning = __webpack_require__(13);
+var _warning = __webpack_require__(14);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -18633,7 +18634,7 @@ exports.default = createTransitionManager;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
@@ -18782,7 +18783,7 @@ Route.childContextTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 
 
@@ -20946,7 +20947,7 @@ Link.contextTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
@@ -21119,7 +21120,7 @@ Prompt.contextTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_invariant__);
@@ -21289,7 +21290,7 @@ var isExtraneousPopstateEvent = function isExtraneousPopstateEvent(event) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
@@ -21476,7 +21477,7 @@ StaticRouter.childContextTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_invariant__);
@@ -24777,7 +24778,7 @@ var _HomeStore = __webpack_require__(90);
 
 var _HomeStore2 = _interopRequireDefault(_HomeStore);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -25457,7 +25458,7 @@ var _draftjsToHtmlFork2 = _interopRequireDefault(_draftjsToHtmlFork);
 
 var _CacheKit = __webpack_require__(699);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -25642,6 +25643,7 @@ var TopicStore = function (_AbstractStore) {
             _this.postEditorState = _draftJs.EditorState.createEmpty();
         };
 
+        _this.favoriteActing = false;
         _this.hasFavorited = false;
         _this.setFavorite = function () {
             var status = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
@@ -25649,9 +25651,14 @@ var TopicStore = function (_AbstractStore) {
             _this.hasFavorited = status;
         };
         _this.favoriteTopic = function () {
-            var topic = _this.topic;
+            var topic = _this.topic,
+                favoriteActing = _this.favoriteActing;
             var id = topic.id;
 
+            if (favoriteActing) {
+                return Promise.reject(false);
+            }
+            _this.favoriteActing = true;
             return (0, _Topic.FavoriteTopic)({
                 id: id
             }).then(function (result) {
@@ -25664,12 +25671,19 @@ var TopicStore = function (_AbstractStore) {
                 });
                 _this.setTopic(newTopic);
                 return result;
+            }).finally(function () {
+                _this.favoriteActing = false;
             });
         };
         _this.unFavoriteTopic = function () {
-            var topic = _this.topic;
+            var topic = _this.topic,
+                favoriteActing = _this.favoriteActing;
             var id = topic.id;
 
+            if (favoriteActing) {
+                return Promise.reject(false);
+            }
+            _this.favoriteActing = true;
             return (0, _Topic.UnFavoriteTopic)({
                 id: id
             }).then(function (result) {
@@ -25682,6 +25696,8 @@ var TopicStore = function (_AbstractStore) {
                 });
                 _this.setTopic(newTopic);
                 return result;
+            }).finally(function () {
+                _this.favoriteActing = false;
             });
         };
         _this.handleFavorite = function () {
@@ -25696,7 +25712,7 @@ var TopicStore = function (_AbstractStore) {
             var user = globalStore.user;
             var topic = _this.topic;
 
-            if (!user || !user.id || !topic) {
+            if (!user || !user.id || !topic || user.favoriteTopicIds.includes(topic.id)) {
                 return;
             }
             if ((0, _CacheKit.hasFavoriteTopic)(user.id, topic.id)) {
@@ -25913,6 +25929,7 @@ __decorate([_mobx.action], TopicStore.prototype, "createPost", void 0);
 __decorate([_mobx.observable], TopicStore.prototype, "postEditorState", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "postEditorStateChange", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "cleanPostEditor", void 0);
+__decorate([_mobx.observable], TopicStore.prototype, "favoriteActing", void 0);
 __decorate([_mobx.observable], TopicStore.prototype, "hasFavorited", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "setFavorite", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "favoriteTopic", void 0);
@@ -32666,6 +32683,10 @@ var _Topic = __webpack_require__(69);
 
 var _Post = __webpack_require__(209);
 
+var _GlobalStore = __webpack_require__(13);
+
+var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
+
 var _AbstractStore2 = __webpack_require__(41);
 
 var _AbstractStore3 = _interopRequireDefault(_AbstractStore2);
@@ -32721,6 +32742,14 @@ var UCStore = function (_AbstractStore) {
                         return _this.getUserPosts();
                     case "topics":
                         return _this.getUserTopics();
+                    case "favorites":
+                        if (!_env.IS_NODE) {
+                            return _GlobalStore2.default.Instance.userPromise.then(function (me) {
+                                if (me.id === resp.id) {
+                                    return _this.getUserFavorites();
+                                }
+                            });
+                        }
                     default:
                         return Promise.resolve(true);
                 }
@@ -32880,7 +32909,7 @@ var UCStore = function (_AbstractStore) {
             };
             _this.setField("favoritesLoading", true);
             return (0, _User.FetchUserFavorites)(params).then(function (resp) {
-                _this.setTopics(favorites.concat(resp.items));
+                _this.setFavorites(favorites.concat(resp.items));
                 _this.setField("favoritesLoading", false);
                 if (favoritesPage === 1) {
                     _this.setField("favoritesTotal", resp.total);
@@ -33368,6 +33397,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+__webpack_require__(769);
 var Routes = exports.Routes = _routes2.default;
 function Server(location, context, stores) {
     return React.createElement(_mobxReact.Provider, { stores: stores }, React.createElement(_reactRouterDom.StaticRouter, { location: location, context: context }, React.createElement(_reactRouterDom.Switch, null, _routes2.default.map(function (route, index) {
@@ -33534,7 +33564,7 @@ module.exports = emptyFunction;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
@@ -33696,7 +33726,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _warning = __webpack_require__(13);
+var _warning = __webpack_require__(14);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -34088,7 +34118,7 @@ module.exports = ReactPropTypesSecret;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
@@ -34160,7 +34190,7 @@ exports.__esModule = true;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _warning = __webpack_require__(13);
+var _warning = __webpack_require__(14);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -34503,7 +34533,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _warning = __webpack_require__(13);
+var _warning = __webpack_require__(14);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -35242,7 +35272,7 @@ module.exports = Array.isArray || function (arr) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
@@ -35546,7 +35576,7 @@ var createBrowserHistory = function createBrowserHistory() {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
@@ -35867,7 +35897,7 @@ var createHashHistory = function createHashHistory() {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PathUtils__ = __webpack_require__(61);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(81);
@@ -36787,7 +36817,7 @@ var _home = __webpack_require__(576);
 
 var _home2 = _interopRequireDefault(_home);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -36878,7 +36908,7 @@ var _modal2 = _interopRequireDefault(_modal);
 
 var _TextKit = __webpack_require__(160);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -41887,7 +41917,7 @@ var _propTypes = __webpack_require__(32);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _warning = __webpack_require__(13);
+var _warning = __webpack_require__(14);
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -64700,7 +64730,7 @@ var _classnames = __webpack_require__(5);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -65574,7 +65604,7 @@ var _react = __webpack_require__(0);
 
 var React = _interopRequireWildcard(_react);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -65650,7 +65680,7 @@ var _channels = __webpack_require__(603);
 
 var _channels2 = _interopRequireDefault(_channels);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -65728,7 +65758,7 @@ var _classnames2 = _interopRequireDefault(_classnames);
 
 var _reactRouterDom = __webpack_require__(23);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -65865,7 +65895,7 @@ var _channel = __webpack_require__(606);
 
 var _channel2 = _interopRequireDefault(_channel);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -66207,7 +66237,7 @@ var _react = __webpack_require__(0);
 
 var React = _interopRequireWildcard(_react);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -74643,7 +74673,7 @@ var _postItem = __webpack_require__(704);
 
 var _postItem2 = _interopRequireDefault(_postItem);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -74737,11 +74767,12 @@ var TopicMain = function (_React$Component) {
         _this.renderMainThread = function () {
             var store = _this.props.store;
             var topic = store.topic,
-                hasFavorited = store.hasFavorited;
+                hasFavorited = store.hasFavorited,
+                favoriteActing = store.favoriteActing;
 
             return React.createElement("div", { className: styles.topicWrapper, id: "thread" }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + topic.authorName }, React.createElement(_charAvatar2.default, { className: styles.avatar, text: topic.authorName[0] }), React.createElement("span", { className: styles.username }, topic.authorName)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)(new Date(topic.createTime * 1000)) }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)(new Date(topic.createTime * 1000))))), React.createElement("li", { className: styles.idBadge }, React.createElement("span", null, "\u697C\u4E3B")))), React.createElement("div", { className: styles.topicBody, dangerouslySetInnerHTML: {
                     __html: (0, _HtmlKit.sanitize)(topic.contentHtml)
-                } }), React.createElement("aside", { className: styles.asideActions }, React.createElement("ul", null, React.createElement("li", { className: styles.replyBtn }, React.createElement(_next.Button, { type: "text", onClick: _this.goComment }, "\u56DE\u590D"), React.createElement(_reactCopyToClipboard.CopyToClipboard, { text: _GlobalStore2.default.Instance.URL + "#thread", onCopy: _this.refTopicLink }, React.createElement(_next.Button, { type: "text" }, React.createElement("i", { title: "引用", className: "fa fa-fw fa-link" })))))), React.createElement("footer", null, React.createElement("div", { className: styles.actions }, React.createElement("ul", null, React.createElement("li", { className: styles.views }, React.createElement("i", { className: "fa fa-eye" }), React.createElement("span", { className: styles.count }, topic.viewsCount), "\u6B21\u6D4F\u89C8"), React.createElement("li", { className: styles.favorite }, React.createElement("i", { className: hasFavorited ? "el-icon-star-on" : "el-icon-star-off" }), React.createElement("span", { className: styles.count, onClick: store.handleFavorite }, topic.favoritesCount), "\u6536\u85CF"), React.createElement("li", { className: styles.upvote }, React.createElement("i", { className: "fa fa-heart-o" }), React.createElement("span", { className: styles.count }, topic.upvotesCount), "\u559C\u6B22"))))));
+                } }), React.createElement("aside", { className: styles.asideActions }, React.createElement("ul", null, React.createElement("li", { className: styles.replyBtn }, React.createElement(_next.Button, { type: "text", onClick: _this.goComment }, "\u56DE\u590D"), React.createElement(_reactCopyToClipboard.CopyToClipboard, { text: _GlobalStore2.default.Instance.URL + "#thread", onCopy: _this.refTopicLink }, React.createElement(_next.Button, { type: "text" }, React.createElement("i", { title: "引用", className: "fa fa-fw fa-link" })))))), React.createElement("footer", null, React.createElement("div", { className: styles.actions }, React.createElement("ul", null, React.createElement("li", { className: styles.views }, React.createElement("i", { className: "fa fa-eye" }), React.createElement("span", { className: styles.count }, topic.viewsCount), "\u6B21\u6D4F\u89C8"), React.createElement("li", { className: styles.favorite }, React.createElement("i", { className: favoriteActing ? "el-icon-loading" : hasFavorited ? "el-icon-star-on" : "el-icon-star-off" }), React.createElement("span", { className: styles.count, onClick: store.handleFavorite }, topic.favoritesCount), "\u6536\u85CF"), React.createElement("li", { className: styles.upvote }, React.createElement("i", { className: "fa fa-heart-o" }), React.createElement("span", { className: styles.count }, topic.upvotesCount), "\u559C\u6B22"))))));
         };
         _this.renderPostList = function () {
             var store = _this.props.store;
@@ -74853,7 +74884,7 @@ var _classnames2 = _interopRequireDefault(_classnames);
 
 var _mobxReact = __webpack_require__(11);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -82321,7 +82352,7 @@ var _react = __webpack_require__(0);
 
 var React = _interopRequireWildcard(_react);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -82385,7 +82416,7 @@ var _react = __webpack_require__(0);
 
 var React = _interopRequireWildcard(_react);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -82513,7 +82544,7 @@ var _UCStore = __webpack_require__(256);
 
 var _UCStore2 = _interopRequireDefault(_UCStore);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -82740,7 +82771,7 @@ var UCAsideView = function (_React$Component) {
                 me = _props.me,
                 tab = _props.tab;
 
-            return React.createElement("nav", { className: styles.ucAsideView }, React.createElement("div", { className: styles.inner }, React.createElement("ul", { className: styles.menuList }, React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemPosts], _defineProperty({}, styles.active, tab === "posts")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username }, React.createElement("i", { className: "fa fa-fw fa-comment-o" }), React.createElement("span", { className: styles.label }, "\u56DE\u590D", React.createElement("span", { className: styles.count }, user.postsCount || 0)))), React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemTopics], _defineProperty({}, styles.active, tab === "topics")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/topics" }, React.createElement("i", { className: "fa fa-fw fa-reorder" }), React.createElement("span", { className: styles.label }, "\u8BDD\u9898", React.createElement("span", { className: styles.count }, user.topicsCount || 0)))), React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemMentions], _defineProperty({}, styles.active, tab === "mentions")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/mentions" }, React.createElement("i", { className: "fa fa-fw fa-at" }), React.createElement("span", { className: styles.label }, "\u63D0\u5230\u7528\u6237"))), me && me.id > 0 && me.id === user.id && React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemFavorites], _defineProperty({}, styles.active, tab === "favorites")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/favorites" }, React.createElement("i", { className: "fa fa-fw fa-star-o" }), React.createElement("span", { className: styles.label }, "\u6536\u85CF", React.createElement("span", { className: styles.count }, user.favoritesCount || 0)))), me && me.id > 0 && me.id === user.id && React.createElement("li", { className: (0, _classnames2.default)([styles.settingsMenuItem], [styles.itemSettings], _defineProperty({}, styles.active, tab === "settings")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/settings" }, React.createElement("i", { className: "fa fa-fw fa-cog" }), React.createElement("span", { className: styles.label }, "\u4E2A\u4EBA\u8BBE\u7F6E"))))));
+            return React.createElement("nav", { className: styles.ucAsideView }, React.createElement("div", { className: styles.inner }, React.createElement("ul", { className: styles.menuList }, React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemPosts], _defineProperty({}, styles.active, tab === "posts")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username }, React.createElement("i", { className: tab === "posts" ? "fa fa-fw fa-comment" : "fa fa-fw fa-comment-o" }), React.createElement("span", { className: styles.label }, "\u56DE\u590D", React.createElement("span", { className: styles.count }, user.postsCount || 0)))), React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemTopics], _defineProperty({}, styles.active, tab === "topics")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/topics" }, React.createElement("i", { className: "fa fa-fw fa-reorder" }), React.createElement("span", { className: styles.label }, "\u8BDD\u9898", React.createElement("span", { className: styles.count }, user.topicsCount || 0)))), React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemMentions], _defineProperty({}, styles.active, tab === "mentions")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/mentions" }, React.createElement("i", { className: "fa fa-fw fa-at" }), React.createElement("span", { className: styles.label }, "\u63D0\u5230\u7528\u6237"))), me && me.id > 0 && me.id === user.id && React.createElement("li", { className: (0, _classnames2.default)([styles.menuItem], [styles.itemFavorites], _defineProperty({}, styles.active, tab === "favorites")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/favorites" }, React.createElement("i", { className: tab === "favorites" ? "fa fa-fw fa-star" : "fa fa-fw fa-star-o" }), React.createElement("span", { className: styles.label }, "\u6536\u85CF", React.createElement("span", { className: styles.count }, user.favoritesCount || 0)))), me && me.id > 0 && me.id === user.id && React.createElement("li", { className: (0, _classnames2.default)([styles.settingsMenuItem], [styles.itemSettings], _defineProperty({}, styles.active, tab === "settings")) }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username + "/settings" }, React.createElement("i", { className: "fa fa-fw fa-cog" }), React.createElement("span", { className: styles.label }, "\u4E2A\u4EBA\u8BBE\u7F6E"))))));
         }
     }]);
 
@@ -82847,9 +82878,10 @@ var PostsTab = function (_React$Component) {
             var store = this.props.store;
             var postsLoading = store.postsLoading,
                 hasMorePost = store.hasMorePost,
-                getNextPagePosts = store.getNextPagePosts;
+                getNextPagePosts = store.getNextPagePosts,
+                postsTotal = store.postsTotal;
 
-            return React.createElement("div", { className: styles.postsTab }, this.renderPostList(), !postsLoading && hasMorePost && React.createElement("div", { className: styles.loadMore }, React.createElement(_next.Button, { onClick: getNextPagePosts }, "\u8F7D\u5165\u66F4\u591A")));
+            return React.createElement("div", { className: styles.postsTab }, this.renderPostList(), !postsLoading && hasMorePost && postsTotal !== -1 && React.createElement("div", { className: styles.loadMore }, React.createElement(_next.Button, { onClick: getNextPagePosts }, "\u8F7D\u5165\u66F4\u591A")));
         }
     }]);
 
@@ -83038,9 +83070,10 @@ var TopicsTab = function (_React$Component) {
             var store = this.props.store;
             var topicsLoading = store.topicsLoading,
                 hasMoreTopic = store.hasMoreTopic,
-                getNextPageTopics = store.getNextPageTopics;
+                getNextPageTopics = store.getNextPageTopics,
+                topicsTotal = store.topicsTotal;
 
-            return React.createElement("div", { className: styles.topicsTab }, this.renderTopicList(), !topicsLoading && hasMoreTopic && React.createElement("div", { className: styles.loadMore }, React.createElement(_next.Button, { onClick: getNextPageTopics }, "\u8F7D\u5165\u66F4\u591A")));
+            return React.createElement("div", { className: styles.topicsTab }, this.renderTopicList(), !topicsLoading && hasMoreTopic && topicsTotal !== -1 && React.createElement("div", { className: styles.loadMore }, React.createElement(_next.Button, { onClick: getNextPageTopics }, "\u8F7D\u5165\u66F4\u591A")));
         }
     }]);
 
@@ -83232,9 +83265,10 @@ var FavoritesTab = function (_React$Component) {
             var store = this.props.store;
             var favoritesLoading = store.favoritesLoading,
                 hasMoreFavorites = store.hasMoreFavorites,
-                getNextPageFavorites = store.getNextPageFavorites;
+                getNextPageFavorites = store.getNextPageFavorites,
+                favoritesTotal = store.favoritesTotal;
 
-            return React.createElement("div", { className: styles.topicsTab }, this.renderFavoriteList(), !favoritesLoading && hasMoreFavorites && React.createElement("div", { className: styles.loadMore }, React.createElement(_next.Button, { onClick: getNextPageFavorites }, "\u8F7D\u5165\u66F4\u591A")));
+            return React.createElement("div", { className: styles.topicsTab }, this.renderFavoriteList(), !favoritesLoading && hasMoreFavorites && favoritesTotal !== -1 && React.createElement("div", { className: styles.loadMore }, React.createElement(_next.Button, { onClick: getNextPageFavorites }, "\u8F7D\u5165\u66F4\u591A")));
         }
     }]);
 
@@ -83271,7 +83305,7 @@ var _footer = __webpack_require__(58);
 
 var _footer2 = _interopRequireDefault(_footer);
 
-var _GlobalStore = __webpack_require__(14);
+var _GlobalStore = __webpack_require__(13);
 
 var _GlobalStore2 = _interopRequireDefault(_GlobalStore);
 
@@ -84051,6 +84085,32 @@ module.exports = {"bgBox":"__2Vv0w","contentBox":"__1yeWy","text":"___eJQM","btn
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "img/404.jpg";
+
+/***/ }),
+/* 769 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(770);
+
+/***/ }),
+/* 770 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Promise.prototype.finally = function (finaliser) {
+    return this.then(function (result) {
+        finaliser();
+        return result;
+    }, function (reason) {
+        finaliser();
+        return reason;
+    });
+};
 
 /***/ })
 /******/ ]);
