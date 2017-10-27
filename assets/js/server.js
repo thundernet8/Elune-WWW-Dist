@@ -74993,7 +74993,10 @@ var TopicMain = function (_React$Component) {
         value: function componentDidMount() {
             var store = this.props.store;
 
-            store.checkFavoriteStatus();
+            _GlobalStore2.default.Instance.userPromise.then(function () {
+                store.checkFavoriteStatus();
+                store.checkLikeStatus();
+            });
         }
     }, {
         key: "render",
