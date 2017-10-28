@@ -7414,7 +7414,7 @@ __decorate([_mobx.observable], GlobalStore.prototype, "userPromise", void 0);
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -75190,9 +75190,11 @@ var TopicMain = function (_React$Component) {
                 likeActing = store.likeActing,
                 canEditTopic = store.canEditTopic,
                 submittingEditTopic = store.submittingEditTopic;
+
+            var me = _GlobalStore2.default.Instance.user;
             var editingTopic = _this.state.editingTopic;
 
-            return React.createElement("div", { className: styles.topicWrapper, id: "thread" }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + topic.authorName }, React.createElement(_charAvatar2.default, { className: styles.avatar, text: topic.authorName[0] }), React.createElement("span", { className: styles.username }, topic.authorName)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)(new Date(topic.createTime * 1000)) }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)(new Date(topic.createTime * 1000))))), React.createElement("li", { className: styles.idBadge }, React.createElement("span", null, "\u697C\u4E3B")), function (that) {
+            return React.createElement("div", { className: styles.topicWrapper, id: "thread" }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + topic.authorName }, me && me.avatar ? React.createElement("span", { className: styles.avatar }, React.createElement("img", { src: me.avatar })) : React.createElement(_charAvatar2.default, { className: styles.avatar, text: topic.authorName[0] }), React.createElement("span", { className: styles.username }, topic.authorName)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)(new Date(topic.createTime * 1000)) }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)(new Date(topic.createTime * 1000))))), React.createElement("li", { className: styles.idBadge }, React.createElement("span", null, "\u697C\u4E3B")), function (that) {
                 if (!canEditTopic) {
                     return null;
                 }
