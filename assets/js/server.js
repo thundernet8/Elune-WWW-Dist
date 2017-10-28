@@ -7227,12 +7227,12 @@ var GlobalStore = function (_AbstractStore) {
 
         var _this = _possibleConstructorReturn(this, (GlobalStore.__proto__ || Object.getPrototypeOf(GlobalStore)).call(this, arg));
 
-        _this.getRefUrl = function () {
+        _this.getRefUrl = function (id) {
             var user = _this.user,
                 HREF = _this.HREF;
 
-            if (user && user.id) {
-                return (0, _UrlKit.addQuery)(HREF || "", "ref", user.id.toString(), false);
+            if (id || user && user.id) {
+                return (0, _UrlKit.addQuery)(HREF || "", "ref", id || user.id.toString(), false);
             }
             return HREF;
         };
@@ -75156,7 +75156,7 @@ var TopicMain = function (_React$Component) {
         };
         _this.refTopicLink = function () {
             (0, _next.Message)({
-                message: "已成功复制帖子链接",
+                message: "已成功复制话题链接",
                 type: "success"
             });
         };
@@ -75414,10 +75414,11 @@ var PostItem = function (_React$Component) {
             var posts = store.posts;
 
             var replyIndex = this.props.index + 1;
+            var me = _GlobalStore2.default.Instance.user;
             var replies = posts.filter(function (x) {
                 return x.pid === post.id;
             });
-            return React.createElement("div", { className: styles.postItem, id: "post-" + post.id }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + post.authorName }, post.author.avatar ? React.createElement("span", { className: styles.avatar }, React.createElement("img", { src: post.author.avatar })) : React.createElement(_charAvatar2.default, { className: styles.avatar, text: post.authorName[0] }), React.createElement("span", { className: styles.username }, post.authorName)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)(new Date(post.createTime * 1000)) }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)(new Date(post.createTime * 1000))))), topic.authorId === post.authorId && React.createElement("li", { className: styles.idBadge }, React.createElement("span", null, "\u697C\u4E3B")), replyIndex === 1 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge1]) }, React.createElement("span", null, "\u6C99\u53D1")), replyIndex === 2 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge2]) }, React.createElement("span", null, "\u677F\u51F3")), replyIndex === 3 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge3]) }, React.createElement("span", null, "\u5730\u677F")))), React.createElement("div", { className: styles.postBody }, React.createElement(_pureHtmlContent2.default, { html: post.contentHtml })), React.createElement("aside", { className: styles.postActions }, React.createElement("ul", null, React.createElement("li", { className: styles.replyBtn }, React.createElement(_next.Button, { type: "text", onClick: this.goReply }, "\u56DE\u590D"), React.createElement(_reactCopyToClipboard.CopyToClipboard, { text: _GlobalStore2.default.Instance.getRefUrl() + "#reply" + replyIndex, onCopy: this.refReplyLink }, React.createElement(_next.Button, { type: "text" }, React.createElement("i", { title: "引用", className: "fa fa-fw fa-link" })))))), React.createElement("footer", null, React.createElement("ul", null, !!replies && replies.length > 0 && replies.map(function (reply, index) {
+            return React.createElement("div", { className: styles.postItem, id: "post-" + post.id }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + post.authorName }, post.author.avatar ? React.createElement("span", { className: styles.avatar }, React.createElement("img", { src: post.author.avatar })) : React.createElement(_charAvatar2.default, { className: styles.avatar, text: post.authorName[0] }), React.createElement("span", { className: styles.username }, post.authorName)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)(new Date(post.createTime * 1000)) }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)(new Date(post.createTime * 1000))))), topic.authorId === post.authorId && React.createElement("li", { className: styles.idBadge }, React.createElement("span", null, "\u697C\u4E3B")), replyIndex === 1 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge1]) }, React.createElement("span", null, "\u6C99\u53D1")), replyIndex === 2 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge2]) }, React.createElement("span", null, "\u677F\u51F3")), replyIndex === 3 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge3]) }, React.createElement("span", null, "\u5730\u677F")))), React.createElement("div", { className: styles.postBody }, React.createElement(_pureHtmlContent2.default, { html: post.contentHtml })), React.createElement("aside", { className: styles.postActions }, React.createElement("ul", null, React.createElement("li", { className: styles.replyBtn }, React.createElement(_next.Button, { type: "text", onClick: this.goReply }, "\u56DE\u590D"), React.createElement(_reactCopyToClipboard.CopyToClipboard, { text: _GlobalStore2.default.Instance.getRefUrl(me.id.toString()) + "#reply" + replyIndex, onCopy: this.refReplyLink }, React.createElement(_next.Button, { type: "text" }, React.createElement("i", { title: "引用", className: "fa fa-fw fa-link" })))))), React.createElement("footer", null, React.createElement("ul", null, !!replies && replies.length > 0 && replies.map(function (reply, index) {
                 return React.createElement("li", { key: index, className: styles.reply }, React.createElement("a", { href: "#post-" + reply.id }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: React.createElement("div", { className: styles.replyTooltipContent }, reply.content.trim()), className: styles.replyTooltip }, React.createElement("i", { className: "icon fa fa-fw fa-reply" }), reply.authorName, " \u56DE\u590D\u4E86\u5B83")));
             })))));
         }
