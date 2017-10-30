@@ -18966,6 +18966,12 @@ exports.isEmail = function (email) {
     var reg = new RegExp(/[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}/);
     return reg.test(email);
 };
+exports.isNumberic = function (str) {
+    return str != null && str !== "" && !isNaN(str);
+};
+exports.isIntNumberic = function (str) {
+    return str != null && str.match(/[0-9]+/);
+};
 exports.lowerCaseFirst = function (str) {
     if (!str) {
         return str;
@@ -19840,7 +19846,9 @@ var Sidebar = function (_React$Component) {
     _createClass(Sidebar, [{
         key: "render",
         value: function render() {
-            return React.createElement("aside", { className: styles.sidebar }, React.createElement(_user2.default, null), React.createElement("div", { className: (0, _classnames2.default)("widget", [styles.widget]) }, React.createElement("div", { className: "widget-content" }, React.createElement("a", { href: "https://webapproach.net/go/do", target: "_blank" }, React.createElement("img", { src: "https://elune.fuli.news/content/images/2017/10/19/a127058b1f84e24760e7da360978a746.png", style: { maxWidth: "100%" } })))), React.createElement("div", { className: "widget" }, React.createElement("div", { className: "widget-content" }, React.createElement("a", { href: "https://webapproach.net/go/cl", target: "_blank" }, React.createElement("img", { src: "https://elune.fuli.news/content/images/2017/10/19/b1f7279c640a51c2d4bf5983a328ad64.jpg", style: { maxWidth: "100%" } })))));
+            var where = this.props.where;
+
+            return React.createElement("aside", { className: (0, _classnames2.default)([styles.sidebar], [where], "sidebar") }, React.createElement(_user2.default, null), React.createElement("div", { className: (0, _classnames2.default)("widget", [styles.widget]) }, React.createElement("div", { className: "widget-content" }, React.createElement("a", { href: "https://webapproach.net/go/do", target: "_blank" }, React.createElement("img", { src: "https://elune.fuli.news/content/images/2017/10/19/a127058b1f84e24760e7da360978a746.png", style: { maxWidth: "100%" } })))), React.createElement("div", { className: "widget" }, React.createElement("div", { className: "widget-content" }, React.createElement("a", { href: "https://webapproach.net/go/cl", target: "_blank" }, React.createElement("img", { src: "https://elune.fuli.news/content/images/2017/10/19/b1f7279c640a51c2d4bf5983a328ad64.jpg", style: { maxWidth: "100%" } })))));
         }
     }]);
 
@@ -83189,7 +83197,7 @@ module.exports = {"postEditor":"__29Tnd","editorWrapper":"__2t-f8","editorToolba
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"mainView":"__2qZrV","topicLoading":"__337lc","postsLoading":"__Y7rgR","topicWrapper":"__3Uoyd","inner":"__3Jdtl","idBadge":"__3G-z6","editActions":"__MW08B","goEditTopic":"__y0wK6","dot":"__2e2Wm","author":"__OULBy","avatar":"__1daWR","topicBody":"__2jp__","asideActions":"__3fPwY","count":"__1etwN","views":"__10Nos","commentPlaceholder":"__2PBa0","commentEditorWrapper":"__12Kba","commentEditBody":"__29ON_","close":"__eQ5tH","commentEditor":"__1DG7h","commentEditorToolbar":"__19gOR","topicBodyEditing":"__1dTeu"};
+module.exports = {"mainView":"__2qZrV","mainWrapper":"__Md1xO","topicLoading":"__337lc","postsLoading":"__Y7rgR","topicWrapper":"__3Uoyd","inner":"__3Jdtl","idBadge":"__3G-z6","editActions":"__MW08B","goEditTopic":"__y0wK6","dot":"__2e2Wm","author":"__OULBy","avatar":"__1daWR","topicBody":"__2jp__","asideActions":"__3fPwY","count":"__1etwN","views":"__10Nos","commentPlaceholder":"__2PBa0","commentEditorWrapper":"__12Kba","commentEditBody":"__29ON_","close":"__eQ5tH","commentEditor":"__1DG7h","commentEditorToolbar":"__19gOR","topicBodyEditing":"__1dTeu"};
 
 /***/ }),
 /* 752 */
