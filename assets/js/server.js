@@ -12020,7 +12020,7 @@ function deepMerge(target, source) {
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -20745,7 +20745,7 @@ var Header = function (_React$Component) {
             }
             var hasUnread = user.unreadCount > 0;
             var notifications = user.unreadNotifications.items;
-            return React.createElement("li", { className: styles.itemNotifications }, React.createElement(_dropdown2.default, { className: styles.notificationDropdown, autoClose: false, anchorNode: React.createElement("span", { className: "btn-label" }, hasUnread ? React.createElement("i", { className: "fa fa-fw fa-bell" }, React.createElement("span", null, user.unreadCount)) : React.createElement("i", { className: "fa fa-fw fa-bell-o" })) }, React.createElement("header", null, React.createElement("h4", null, "\u6D88\u606F\u901A\u77E5"), React.createElement(_next.Button, { type: "text", loading: markingNotificationsStatus, onClick: globalStore.markNotificationsRead }, !markingNotificationsStatus && React.createElement("i", { className: "fa fa-fw fa-check", title: "标记为全部已读" }))), React.createElement("div", { className: styles.body }, React.createElement("ul", null, function () {
+            return React.createElement("li", { className: styles.itemNotifications }, React.createElement(_dropdown2.default, { className: styles.notificationDropdown, autoClose: false, anchorNode: React.createElement("span", { className: "btn-label" }, hasUnread ? React.createElement("i", { className: "fa fa-fw fa-bell" }, React.createElement("span", null, user.unreadCount)) : React.createElement("i", { className: "fa fa-fw fa-bell-o" })) }, React.createElement("header", null, React.createElement("h4", null, "\u6D88\u606F\u901A\u77E5"), hasUnread && React.createElement(_next.Button, { type: "text", loading: markingNotificationsStatus, onClick: globalStore.markNotificationsRead }, !markingNotificationsStatus && React.createElement("i", { className: "fa fa-fw fa-check", title: "标记为全部已读" }))), React.createElement("div", { className: styles.body }, React.createElement("ul", null, function () {
                 if (notifications && notifications.length > 0) {
                     return notifications.map(function (notification, index) {
                         return React.createElement("li", { key: index }, React.createElement("h4", null, notification.title), React.createElement("p", null, notification.content));
