@@ -12017,14 +12017,15 @@ function deepMerge(target, source) {
 "use strict";
 
 
-exports.__esModule = true;
-exports.IS_PROD = "production" === "production";
-exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
-
-exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
-exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
-exports.SESSION_COOKIE_NAME = "SESSIONID";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var IS_PROD = exports.IS_PROD = "production" === "production";
+var IS_NODE = exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
+var API_BASE = exports.API_BASE = IS_PROD && !IS_NODE ? "https://api-cn-sh.elune.me/api/v1/" : "http://127.0.0.1:9000/api/v1/";
+var SSR_SERVER_HOST = exports.SSR_SERVER_HOST = IS_PROD ? "127.0.0.1" : "127.0.0.1";
+var SSR_SERVER_PORT = exports.SSR_SERVER_PORT = IS_PROD ? 9002 : 9002;
+var SESSION_COOKIE_NAME = exports.SESSION_COOKIE_NAME = "SESSIONID";
 
 /***/ }),
 /* 16 */
