@@ -12017,15 +12017,14 @@ function deepMerge(target, source) {
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-var IS_PROD = exports.IS_PROD = "production" === "production";
-var IS_NODE = exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-var API_BASE = exports.API_BASE = IS_PROD && !IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
-var SSR_SERVER_HOST = exports.SSR_SERVER_HOST = IS_PROD ? "127.0.0.1" : "127.0.0.1";
-var SSR_SERVER_PORT = exports.SSR_SERVER_PORT = IS_PROD ? 9002 : 9002;
-var SESSION_COOKIE_NAME = exports.SESSION_COOKIE_NAME = "SESSIONID";
+exports.__esModule = true;
+exports.IS_PROD = "production" === "production";
+exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
+
+exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
+exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
+exports.SESSION_COOKIE_NAME = "SESSIONID";
 
 /***/ }),
 /* 16 */
@@ -100638,11 +100637,7 @@ var CreationView = function (_React$Component) {
             _this.editor = editor;
         };
         _this.fallback = function () {
-            var history = _this.props.history;
-
-            if (history.length > 0) {
-                history.goBack();
-            }
+            location.href = "/";
         };
         _this.formClick = function (e) {
             e.preventDefault();
@@ -100662,6 +100657,7 @@ var CreationView = function (_React$Component) {
                     message: "创建话题成功",
                     type: "success"
                 });
+                setTimeout(_this.fallback, 1000);
             }).catch(function (err) {
                 (0, _next.Message)({
                     message: err.message || err.toString(),
