@@ -11719,7 +11719,7 @@ var GlobalStore = function (_AbstractStore) {
         value: function fetchData() {
             var promises = [];
             promises.push(this.checkMe());
-            promises.push(this.statistisOnline());
+
             return Promise.all(promises);
         }
     }, {
@@ -11727,8 +11727,7 @@ var GlobalStore = function (_AbstractStore) {
         value: function toJSON() {
             var obj = _get(GlobalStore.prototype.__proto__ || Object.getPrototypeOf(GlobalStore.prototype), "toJSON", this).call(this);
             return Object.assign(obj, {
-                user: this.user,
-                onlineStatistic: this.onlineStatistic
+                user: this.user
             });
         }
     }, {
@@ -11739,14 +11738,10 @@ var GlobalStore = function (_AbstractStore) {
                 return this;
             }
             var user = json.user,
-                onlineStatistic = json.onlineStatistic,
                 bannerMsg = json.bannerMsg;
 
             if (typeof user !== "undefined") {
                 this.setUser(user);
-            }
-            if (typeof onlineStatistic !== "undefined") {
-                this.onlineStatistic = onlineStatistic;
             }
             if (typeof bannerMsg !== "undefined") {
                 this.setBulletion(bannerMsg);
@@ -12038,7 +12033,7 @@ function deepMerge(target, source) {
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
