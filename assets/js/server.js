@@ -17590,8 +17590,8 @@ function webApi(httpMethod, path, params) {
     var csrfToken = typeof window !== "undefined" ? window["csrfToken"] : global["csrfToken"];
 
     var headers = {
-        Accept: "application/json",
-        "Content-type": typeof FormData !== "undefined" && params instanceof FormData ? "multipart/form-data" : "application/json"
+        Accept: "*/*",
+        "Content-type": typeof FormData !== "undefined" && params instanceof FormData ? "multipart/form-data" : "text/plain;charset=UTF-8"
     };
     if (csrfToken) {
         headers["X-CSRF-Token"] = csrfToken;
