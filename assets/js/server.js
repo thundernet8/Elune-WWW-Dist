@@ -20528,7 +20528,7 @@ var getLocalDate = exports.getLocalDate = function getLocalDate(gmtDate) {
     return (0, _moment2.default)(gmtDate.valueOf() - offset);
 };
 var getGMT8DateStr = exports.getGMT8DateStr = function getGMT8DateStr(date) {
-    return date.add(8, "hours").format("YYYY-MM-DD HH:mm:ss");
+    return date.add(8, "hours").format("YYYY-MM-DD HH:mm:ss Z");
 };
 
 /***/ }),
@@ -102122,7 +102122,7 @@ var NotificationView = function (_React$Component) {
                 return React.createElement("div", { className: (0, _classnames2.default)([styles.notificationList], [styles.emptyList]) }, "\u7A7A\u7A7A\u5982\u4E5F~");
             }
             return React.createElement("ul", { className: styles.notificationList }, notifications.map(function (notification, index) {
-                return React.createElement("li", { key: index }, React.createElement("header", null, React.createElement("div", null, type !== "system" && React.createElement("span", { className: styles.sender }, React.createElement(_reactRouterDom.Link, { to: "/u/" + notification.sender }, notification.sender)), React.createElement("span", { className: styles.sendTime }, (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(notification.createTime * 1000))))), React.createElement("h4", null, notification.title), React.createElement("p", null, notification.content));
+                return React.createElement("li", { key: index }, React.createElement("header", null, React.createElement("div", null, type !== "system" && React.createElement("span", { className: styles.sender }, React.createElement(_reactRouterDom.Link, { to: "/u/" + notification.sender }, notification.sender)), React.createElement("span", { className: styles.sendTime }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)((0, _moment2.default)(notification.createTime * 1000)) }, (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(notification.createTime * 1000)))))), React.createElement("h4", null, notification.title), React.createElement("p", null, notification.content));
             }), loading && React.createElement("div", { className: styles.loading }, React.createElement("i", { className: "el-icon-loading" })));
         };
         var match = props.match,
@@ -102164,7 +102164,7 @@ exports.default = NotificationViewWithRouter;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"notificationView":"__w8nBW","container":"__RX_K2","notificationList":"__38eD4","sender":"__2zoLH","sendTime":"__1CITC","emptyList":"__1ZPqc","loading":"__1Al9l","loadMore":"__2mHcp"};
+module.exports = {"notificationView":"__w8nBW","container":"__RX_K2","tabs":"__1X7Ni","notificationList":"__38eD4","sender":"__2zoLH","sendTime":"__1CITC","emptyList":"__1ZPqc","loading":"__1Al9l","loadMore":"__2mHcp"};
 
 /***/ }),
 /* 906 */
