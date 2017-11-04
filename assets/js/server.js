@@ -17814,6 +17814,7 @@ exports.webApiGet = webApiGet;
 exports.webApiPost = webApiPost;
 exports.webApiDel = webApiDel;
 exports.webApiPut = webApiPut;
+exports.formApiPost = formApiPost;
 
 var _env = __webpack_require__(14);
 
@@ -17832,13 +17833,15 @@ var _qs2 = _interopRequireDefault(_qs);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function webApi(httpMethod, path, params) {
+    var contentType = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "application/json";
+
     path = path.startsWith("/") ? path.substring(1) : path;
 
     var csrfToken = typeof window !== "undefined" ? window["csrfToken"] : global["csrfToken"];
 
     var headers = {
         Accept: "*/*",
-        "Content-type": typeof FormData !== "undefined" && params instanceof FormData ? "multipart/form-data" : "application/x-www-form-urlencoded"
+        "Content-type": typeof FormData !== "undefined" && params instanceof FormData ? "multipart/form-data" : contentType
     };
     if (csrfToken) {
         headers["X-CSRF-Token"] = csrfToken;
@@ -17888,11 +17891,15 @@ function webApiDel(path, params) {
 function webApiPut(path, params) {
     return webApi("put", path, params);
 }
+function formApiPost(path, params) {
+    return webApi("post", path, params, "application/x-www-form-urlencoded");
+}
 exports.default = {
     Get: webApiGet,
     Post: webApiPost,
     Put: webApiPut,
-    Delete: webApiDel
+    Delete: webApiDel,
+    FormPost: formApiPost
 };
 
 /***/ }),
@@ -26679,22 +26686,22 @@ var _WebApi2 = _interopRequireDefault(_WebApi);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function Login(payload) {
-    return _WebApi2.default.Post("signin", payload);
+    return _WebApi2.default.FormPost("signin", payload);
 }
 function Register(payload) {
-    return _WebApi2.default.Post(payload.ref ? "signup?ref=" + payload.ref : "signup", payload);
+    return _WebApi2.default.FormPost(payload.ref ? "signup?ref=" + payload.ref : "signup", payload);
 }
 function Logout() {
-    return _WebApi2.default.Post("signout", {});
+    return _WebApi2.default.FormPost("signout", {});
 }
 function WhoAmI() {
-    return _WebApi2.default.Post("user/me", {});
+    return _WebApi2.default.FormPost("user/me", {});
 }
 function Activate(payload) {
-    return _WebApi2.default.Post("activate" + payload.tokenSearch, {});
+    return _WebApi2.default.FormPost("activate" + payload.tokenSearch, {});
 }
 function ReActivate(payload) {
-    return _WebApi2.default.Post("reactivate", payload);
+    return _WebApi2.default.FormPost("reactivate", payload);
 }
 exports.default = {
     Login: Login,
@@ -27612,7 +27619,7 @@ var _WebApi2 = _interopRequireDefault(_WebApi);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function FetchNamedUser(payload) {
-    return _WebApi2.default.Post("users/name", payload);
+    return _WebApi2.default.FormPost("users/name", payload);
 }
 function FetchUserFavorites(payload) {
     return _WebApi2.default.Get("usermetas/favorites", payload);
@@ -27621,7 +27628,7 @@ function UpdateUserProfile(payload) {
     return _WebApi2.default.Post("users/profile", payload);
 }
 function DailySign() {
-    return _WebApi2.default.Post("users/dailySign", {});
+    return _WebApi2.default.FormPost("users/dailySign", {});
 }
 exports.default = {
     FetchNamedUser: FetchNamedUser,
@@ -56568,7 +56575,7 @@ var _WebApi2 = _interopRequireDefault(_WebApi);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function OnlineStatistic() {
-    return _WebApi2.default.Post("status/online", {});
+    return _WebApi2.default.FormPost("status/online", {});
 }
 exports.default = {
     OnlineStatistic: OnlineStatistic
