@@ -49477,7 +49477,7 @@ function done(stream, er, data) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"postItem":"__u5NLp","inner":"__144ap","idBadge":"__3GzRb","orderBadge":"__H-PQl","orderBadge2":"__1jyVM","orderBadge3":"__1tjAE","author":"__8rgtw","avatar":"__1Pdkt","postBody":"__2C8cs","postActions":"__2idQl","replyTooltip":"__2wIKP","replyTooltipContent":"__1eGNg","simplePostItem":"__astDV"};
+module.exports = {"postItem":"__u5NLp","inner":"__144ap","idBadge":"__3GzRb","orderBadge":"__H-PQl","orderBadge2":"__1jyVM","orderBadge3":"__1tjAE","author":"__8rgtw","avatar":"__1Pdkt","postBody":"__2C8cs","sharpen":"__6-5wz","postActions":"__2idQl","replyTooltip":"__2wIKP","replyTooltipContent":"__1eGNg","simplePostItem":"__astDV"};
 
 /***/ }),
 /* 381 */
@@ -100449,7 +100449,7 @@ module.exports = {"postEditor":"__29Tnd","editorWrapper":"__2t-f8","editorToolba
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"mainView":"__2qZrV","mainWrapper":"__Md1xO","topicLoading":"__337lc","postsLoading":"__Y7rgR","topicWrapper":"__3Uoyd","inner":"__3Jdtl","idBadge":"__3G-z6","editActions":"__MW08B","goEditTopic":"__y0wK6","dot":"__2e2Wm","author":"__OULBy","avatar":"__1daWR","topicBody":"__2jp__","asideActions":"__3fPwY","count":"__1etwN","views":"__10Nos","commentPlaceholder":"__2PBa0","commentEditorWrapper":"__12Kba","commentEditBody":"__29ON_","close":"__eQ5tH","commentEditor":"__1DG7h","commentEditorToolbar":"__19gOR","topicBodyEditing":"__1dTeu"};
+module.exports = {"mainView":"__2qZrV","mainWrapper":"__Md1xO","topicLoading":"__337lc","postsLoading":"__Y7rgR","topicWrapper":"__3Uoyd","inner":"__3Jdtl","idBadge":"__3G-z6","editActions":"__MW08B","goEditTopic":"__y0wK6","dot":"__2e2Wm","author":"__OULBy","avatar":"__1daWR","topicBody":"__2jp__","sharpen":"__3YA5B","asideActions":"__3fPwY","count":"__1etwN","views":"__10Nos","commentPlaceholder":"__2PBa0","commentEditorWrapper":"__12Kba","commentEditBody":"__29ON_","close":"__eQ5tH","commentEditor":"__1DG7h","commentEditorToolbar":"__19gOR","topicBodyEditing":"__1dTeu"};
 
 /***/ }),
 /* 882 */
