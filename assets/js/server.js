@@ -6708,6 +6708,53 @@ var GlobalStore = function (_AbstractStore) {
             });
         };
 
+        _this.switchingFollowUserStatus = false;
+        _this.followUser = function (id) {
+            var switchingFollowUserStatus = _this.switchingFollowUserStatus,
+                user = _this.user;
+
+            if (switchingFollowUserStatus || user && user.followingUserIds.includes(id)) {
+                return Promise.reject(false);
+            }
+            _this.switchingFollowUserStatus = true;
+            return (0, _Usermeta.FollowUser)({
+                id: id
+            }).then(function (resp) {
+                if (resp) {
+                    var followingUserIds = user.followingUserIds;
+                    followingUserIds.push(id);
+                    _this.user = Object.assign({}, user, { followingUserIds: followingUserIds });
+                } else {
+                    throw new Error("");
+                }
+            }).finally(function () {
+                _this.switchingFollowUserStatus = false;
+            });
+        };
+        _this.unfollowUser = function (id) {
+            var switchingFollowUserStatus = _this.switchingFollowUserStatus,
+                user = _this.user;
+
+            if (switchingFollowUserStatus || !user || !user.followingUserIds.includes(id)) {
+                return Promise.reject(false);
+            }
+            _this.switchingFollowUserStatus = true;
+            return (0, _Usermeta.UnFollowUser)({
+                id: id
+            }).then(function (resp) {
+                if (resp) {
+                    var followingUserIds = user.followingUserIds.filter(function (x) {
+                        return x !== id;
+                    });
+                    _this.user = Object.assign({}, user, { followingUserIds: followingUserIds });
+                } else {
+                    throw new Error("");
+                }
+            }).finally(function () {
+                _this.switchingFollowUserStatus = false;
+            });
+        };
+
         _this.init = function () {
             _this.checkMe();
             _this.statistisOnline();
@@ -6848,6 +6895,9 @@ __decorate([_mobx.action], GlobalStore.prototype, "statistisOnline", void 0);
 __decorate([_mobx.observable], GlobalStore.prototype, "switchingFollowTopicStatus", void 0);
 __decorate([_mobx.action], GlobalStore.prototype, "followTopic", void 0);
 __decorate([_mobx.action], GlobalStore.prototype, "unfollowTopic", void 0);
+__decorate([_mobx.observable], GlobalStore.prototype, "switchingFollowUserStatus", void 0);
+__decorate([_mobx.action], GlobalStore.prototype, "followUser", void 0);
+__decorate([_mobx.action], GlobalStore.prototype, "unfollowUser", void 0);
 __decorate([_mobx.observable], GlobalStore.prototype, "userPromise", void 0);
 
 /***/ }),
@@ -101436,6 +101486,44 @@ var UCView = function (_React$Component) {
         _this.successUploadAvatar = function (response) {
             _this.store.updateLocalUserField("avatar", response.result);
         };
+        _this.followUser = function () {
+            var followUser = _GlobalStore2.default.Instance.followUser;
+            var user = _this.store.user;
+
+            if (!user) {
+                return;
+            }
+            return followUser(user.id).then(function () {
+                (0, _next.Message)({
+                    message: "关注用户成功",
+                    type: "success"
+                });
+            }).catch(function () {
+                (0, _next.Message)({
+                    message: "关注用户失败",
+                    type: "error"
+                });
+            });
+        };
+        _this.unfollowUser = function () {
+            var unfollowUser = _GlobalStore2.default.Instance.unfollowUser;
+            var user = _this.store.user;
+
+            if (!user) {
+                return;
+            }
+            return unfollowUser(user.id).then(function () {
+                (0, _next.Message)({
+                    message: "取消关注成功",
+                    type: "success"
+                });
+            }).catch(function () {
+                (0, _next.Message)({
+                    message: "取消关注失败",
+                    type: "error"
+                });
+            });
+        };
         _this.renderBrand = function () {
             var match = _this.props.match;
             var username = match.params.username;
@@ -101444,7 +101532,11 @@ var UCView = function (_React$Component) {
             var globalStore = _GlobalStore2.default.Instance;
             var me = globalStore.user;
             var isSelf = me && user && me.id === user.id;
-            return React.createElement("div", { className: styles.userHero, style: { backgroundColor: (0, _ColorKit.getCharColor)(username[0]) } }, React.createElement("div", { className: styles.darkenBg }, React.createElement("div", { className: (0, _classnames2.default)("container", [styles.container]) }, React.createElement("div", { className: styles.profile }, React.createElement("h2", { className: styles.identity }, isSelf ? React.createElement(_next.Upload, { className: styles.avatarUploader, action: _env.API_BASE + "upload/avatars", multiple: false, withCredentials: true, showFileList: false, accept: "image/*", trigger: React.createElement("i", { className: "el-icon-plus" }), onSuccess: _this.successUploadAvatar }, React.createElement(_avatar2.default, { className: styles.avatar, username: username, user: user })) : React.createElement(_avatar2.default, { className: styles.avatar, username: username, user: user }), React.createElement("span", { className: styles.username }, user.nickname || username)), React.createElement("ul", { className: styles.info }, React.createElement("li", { className: styles.bio }, React.createElement("p", null, user.bio)), user.online && React.createElement("li", { className: (0, _classnames2.default)([styles.lastSeen], [styles.online]) }, React.createElement("span", null, React.createElement("i", { className: "fa fa-fw fa-circle" }), "\u5728\u7EBF")), !user.online && !!user.lastSeen && React.createElement("li", { className: styles.lastSeen }, React.createElement("span", null, React.createElement("i", { className: "fa fa-fw fa-clock-o" }), (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(user.lastSeen * 1000)))), user.joinTime && React.createElement("li", { className: styles.joined }, React.createElement("span", null, "\u52A0\u5165\u4E8E", (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(user.joinTime * 1000)))))))));
+            var followingUserIds = me ? me.followingUserIds : [];
+            var followed = user && followingUserIds.includes(user.id);
+            var switchingFollowUserStatus = globalStore.switchingFollowUserStatus;
+
+            return React.createElement("div", { className: styles.userHero, style: { backgroundColor: (0, _ColorKit.getCharColor)(username[0]) } }, React.createElement("div", { className: styles.darkenBg }, React.createElement("div", { className: (0, _classnames2.default)("container", [styles.container]) }, React.createElement("div", { className: styles.profile }, React.createElement("h2", { className: styles.identity }, isSelf ? React.createElement(_next.Upload, { className: styles.avatarUploader, action: _env.API_BASE + "upload/avatars", multiple: false, withCredentials: true, showFileList: false, accept: "image/*", trigger: React.createElement("i", { className: "el-icon-plus" }), onSuccess: _this.successUploadAvatar }, React.createElement(_avatar2.default, { className: styles.avatar, username: username, user: user })) : React.createElement(_avatar2.default, { className: styles.avatar, username: username, user: user }), React.createElement("span", { className: styles.username }, user.nickname || username, user && !isSelf && React.createElement("span", { className: styles.follow }, followed ? React.createElement("span", { onClick: _this.unfollowUser }, React.createElement("i", { className: switchingFollowUserStatus ? "el-icon-loading" : "fa fa-fw fa-retweet" }), "\u53D6\u6D88\u5173\u6CE8") : React.createElement("span", { onClick: _this.followUser }, React.createElement("i", { className: switchingFollowUserStatus ? "el-icon-loading" : "fa fa-fw fa-plus" }), "\u5173\u6CE8")))), React.createElement("ul", { className: styles.info }, React.createElement("li", { className: styles.bio }, React.createElement("p", null, user.bio)), user.online && React.createElement("li", { className: (0, _classnames2.default)([styles.lastSeen], [styles.online]) }, React.createElement("span", null, React.createElement("i", { className: "fa fa-fw fa-circle" }), "\u5728\u7EBF")), !user.online && !!user.lastSeen && React.createElement("li", { className: styles.lastSeen }, React.createElement("span", null, React.createElement("i", { className: "fa fa-fw fa-clock-o" }), (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(user.lastSeen * 1000)))), user.joinTime && React.createElement("li", { className: styles.joined }, React.createElement("span", null, "\u52A0\u5165\u4E8E", (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(user.joinTime * 1000)))))))));
         };
         _this.renderTab = function (tab) {
             var store = _this.store;
@@ -102178,7 +102270,7 @@ exports.default = FavoritesTab;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"ucView":"__vZOqL","container":"__1yzXH","userHero":"__3_R9f","darkenBg":"__10--x","profile":"__WHu0P","identity":"__1zfif","avatarUploader":"__1gwXv","avatar":"__v1xEZ","info":"__3-Q7l","bio":"__3Dhaj","lastSeen":"__Ogjwq","online":"__3EjxM","tabContainer":"__t02Tw"};
+module.exports = {"ucView":"__vZOqL","container":"__1yzXH","userHero":"__3_R9f","darkenBg":"__10--x","profile":"__WHu0P","identity":"__1zfif","follow":"__1gWhh","avatarUploader":"__1gwXv","avatar":"__v1xEZ","info":"__3-Q7l","bio":"__3Dhaj","lastSeen":"__Ogjwq","online":"__3EjxM","tabContainer":"__t02Tw"};
 
 /***/ }),
 /* 902 */
