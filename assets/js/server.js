@@ -93343,12 +93343,14 @@ var TopicMain = function (_React$Component) {
             }
             var meta = {
                 title: topic.title + "-Elune Forum-Web development community,WordPress,PHP,Java,JavaScript",
-                description: topic.content.substr(0, 100),
+                description: topic.content.substr(0, 100).replace(/\s/g, ""),
 
                 meta: {
                     charset: "utf-8",
                     name: {
-                        keywords: "Elune,forum,wordpress,php,java,javascript,react"
+                        keywords: topic.tags.map(function (tag) {
+                            return tag.title;
+                        }).join(",")
                     }
                 }
             };
