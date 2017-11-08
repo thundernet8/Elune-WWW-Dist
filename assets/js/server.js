@@ -50220,6 +50220,8 @@ var NotificationStore = function (_AbstractStore) {
             };
             if (type === "system") {
                 params.type = type;
+            } else {
+                params.type = "user";
             }
             _this.loading = true;
             return (0, _Notifications.FetchNotifications)(params).then(function (resp) {
