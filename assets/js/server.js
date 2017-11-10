@@ -104080,8 +104080,7 @@ var BalanceView = function (_React$Component) {
                 pageSize = _this$store4.pageSize;
             var user = rank.user;
 
-            var id = index + (page - 1) * pageSize + 1;
-            return React.createElement("li", { key: index, className: styles.rankItem }, React.createElement(_avatar2.default, { className: styles.avatar, user: user }), React.createElement("div", { className: styles.content }, React.createElement("header", null, id, ".", " ", React.createElement("span", { className: styles.username }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username }, user.nickname), id === 1 && React.createElement("span", { className: styles.metal }, "\uD83E\uDD47"), id === 2 && React.createElement("span", { className: styles.metal }, "\uD83E\uDD48"), id === 3 && React.createElement("span", { className: styles.metal }, "\uD83E\uDD49"))), React.createElement("div", { className: styles.main }, user.bio && React.createElement("p", { className: styles.bio }, user.bio), user.url && React.createElement("p", { className: styles.url }, React.createElement("a", { href: user.url, target: "_blank" }, user.url)), isCostRank ? React.createElement("label", { className: styles.costBalanceBadge }, "\u5171\u6D88\u8D39 $", React.createElement("span", null, rank.amount)) : React.createElement(_balanceBadge2.default, { className: styles.balanceBadge, balance: rank.amount })), React.createElement("footer", null, "\u7B2C ", React.createElement("span", null, user.id), " \u53F7\u6210\u5458")));
+            return React.createElement("li", { key: index, className: styles.rankItem }, React.createElement(_avatar2.default, { className: styles.avatar, user: user }), React.createElement("div", { className: styles.content }, React.createElement("header", null, index + (page - 1) * pageSize + 1, ".", " ", React.createElement("span", { className: styles.username }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username }, user.nickname))), React.createElement("div", { className: styles.main }, user.bio && React.createElement("p", { className: styles.bio }, user.bio), user.url && React.createElement("p", { className: styles.url }, React.createElement("a", { href: user.url, target: "_blank" }, user.url)), isCostRank ? React.createElement("label", { className: styles.costBalanceBadge }, "\u5171\u6D88\u8D39 $", React.createElement("span", null, rank.amount)) : React.createElement(_balanceBadge2.default, { className: styles.balanceBadge, balance: rank.amount })), React.createElement("footer", null, "\u7B2C ", React.createElement("span", null, user.id), " \u53F7\u6210\u5458")));
         };
         var match = props.match,
             location = props.location,
@@ -104190,7 +104189,6 @@ exports.default = {
     "1": "注册奖励",
     "2": "注册推广奖励",
     "3": "注册特别奖励",
-    "4": "创建回复收益",
     "5": "主题回复收益",
     "6": "主题收藏收益",
     "7": "主题收藏收益回收",
@@ -104199,7 +104197,10 @@ exports.default = {
     "10": "主题关注收益",
     "11": "主题关注收益回收",
     "20": "每日签到奖励",
-    "101": "创建主题"
+    "101": "创建主题",
+    "102": "创建回复",
+    "103": "点赞主题",
+    "104": "点赞回复"
 };
 
 /***/ }),
@@ -104207,7 +104208,7 @@ exports.default = {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"balanceView":"__3QYYZ","container":"__Qb83C","tabs":"__2HXf2","emptyList":"__32Afm","loading":"__1q9CV","loadMore":"__uvOZH","pagination":"__14ACt","detailList":"__aXmdj","balanceTable":"__2X0gK","timeCol":"__LKYqz","desCol":"__3LWOl","red":"__27rRx","green":"__1X13J","rankItem":"__3aRWv","avatar":"__1jycz","content":"__1RqvJ","metal":"__1Hla3","main":"__3t2pl","balanceBadge":"__HPK4-","costBalanceBadge":"__LE2qg"};
+module.exports = {"balanceView":"__3QYYZ","container":"__Qb83C","tabs":"__2HXf2","emptyList":"__32Afm","loading":"__1q9CV","loadMore":"__uvOZH","pagination":"__14ACt","detailList":"__aXmdj","balanceTable":"__2X0gK","timeCol":"__LKYqz","desCol":"__3LWOl","red":"__27rRx","green":"__1X13J","rankItem":"__3aRWv","avatar":"__1jycz","content":"__1RqvJ","main":"__3t2pl","balanceBadge":"__HPK4-","costBalanceBadge":"__LE2qg"};
 
 /***/ }),
 /* 923 */
