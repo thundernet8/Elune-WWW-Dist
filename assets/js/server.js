@@ -104029,7 +104029,7 @@ var BalanceView = function (_React$Component) {
                 render: function render(row) {
                     var _ClassNames;
 
-                    return React.createElement("span", { className: (0, _classnames2.default)((_ClassNames = {}, _defineProperty(_ClassNames, styles.green, row.amount > 0), _defineProperty(_ClassNames, styles.red, row.amount < 0), _ClassNames)) }, row.amount > 0 ? "+" : "-", row.amount);
+                    return React.createElement("span", { className: (0, _classnames2.default)((_ClassNames = {}, _defineProperty(_ClassNames, styles.green, row.amount > 0), _defineProperty(_ClassNames, styles.red, row.amount < 0), _ClassNames)) }, row.amount > 0 ? "+" : "", row.amount);
                 }
             }, {
                 label: "余额",
@@ -104080,7 +104080,8 @@ var BalanceView = function (_React$Component) {
                 pageSize = _this$store4.pageSize;
             var user = rank.user;
 
-            return React.createElement("li", { key: index, className: styles.rankItem }, React.createElement(_avatar2.default, { className: styles.avatar, user: user }), React.createElement("div", { className: styles.content }, React.createElement("header", null, index + (page - 1) * pageSize + 1, ".", " ", React.createElement("span", { className: styles.username }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username }, user.nickname))), React.createElement("div", { className: styles.main }, user.bio && React.createElement("p", { className: styles.bio }, user.bio), user.url && React.createElement("p", { className: styles.url }, React.createElement("a", { href: user.url, target: "_blank" }, user.url)), isCostRank ? React.createElement("label", { className: styles.costBalanceBadge }, "\u5171\u6D88\u8D39 $", React.createElement("span", null, rank.amount)) : React.createElement(_balanceBadge2.default, { className: styles.balanceBadge, balance: rank.amount })), React.createElement("footer", null, "\u7B2C ", React.createElement("span", null, user.id), " \u53F7\u6210\u5458")));
+            var id = index + (page - 1) * pageSize + 1;
+            return React.createElement("li", { key: index, className: styles.rankItem }, React.createElement(_avatar2.default, { className: styles.avatar, user: user }), React.createElement("div", { className: styles.content }, React.createElement("header", null, id, ".", " ", React.createElement("span", { className: styles.username }, React.createElement(_reactRouterDom.Link, { to: "/u/" + user.username }, user.nickname), id === 1 && React.createElement("span", { className: styles.metal }, "\uD83E\uDD47"), id === 2 && React.createElement("span", { className: styles.metal }, "\uD83E\uDD48"), id === 3 && React.createElement("span", { className: styles.metal }, "\uD83E\uDD49"))), React.createElement("div", { className: styles.main }, user.bio && React.createElement("p", { className: styles.bio }, user.bio), user.url && React.createElement("p", { className: styles.url }, React.createElement("a", { href: user.url, target: "_blank" }, user.url)), isCostRank ? React.createElement("label", { className: styles.costBalanceBadge }, "\u5171\u6D88\u8D39 $", React.createElement("span", null, rank.amount)) : React.createElement(_balanceBadge2.default, { className: styles.balanceBadge, balance: rank.amount })), React.createElement("footer", null, "\u7B2C ", React.createElement("span", null, user.id), " \u53F7\u6210\u5458")));
         };
         var match = props.match,
             location = props.location,
@@ -104208,7 +104209,7 @@ exports.default = {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"balanceView":"__3QYYZ","container":"__Qb83C","tabs":"__2HXf2","emptyList":"__32Afm","loading":"__1q9CV","loadMore":"__uvOZH","pagination":"__14ACt","detailList":"__aXmdj","balanceTable":"__2X0gK","timeCol":"__LKYqz","desCol":"__3LWOl","red":"__27rRx","green":"__1X13J","rankItem":"__3aRWv","avatar":"__1jycz","content":"__1RqvJ","main":"__3t2pl","balanceBadge":"__HPK4-","costBalanceBadge":"__LE2qg"};
+module.exports = {"balanceView":"__3QYYZ","container":"__Qb83C","tabs":"__2HXf2","emptyList":"__32Afm","loading":"__1q9CV","loadMore":"__uvOZH","pagination":"__14ACt","detailList":"__aXmdj","balanceTable":"__2X0gK","timeCol":"__LKYqz","desCol":"__3LWOl","red":"__27rRx","green":"__1X13J","rankItem":"__3aRWv","avatar":"__1jycz","content":"__1RqvJ","metal":"__1Hla3","main":"__3t2pl","balanceBadge":"__HPK4-","costBalanceBadge":"__LE2qg"};
 
 /***/ }),
 /* 923 */
