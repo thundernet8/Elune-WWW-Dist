@@ -30244,6 +30244,27 @@ var likeTopic = exports.likeTopic = function likeTopic(uid, topicId) {
 var unLikeTopic = exports.unLikeTopic = function unLikeTopic(uid, topicId) {
     return likeTopic(uid, topicId, false);
 };
+var getLikedPosts = exports.getLikedPosts = function getLikedPosts(uid) {
+    if (!uid) {
+        return [];
+    }
+    var cache = localStorage.getItem("_user_post_data_" + uid);
+    if (!cache) {
+        return [];
+    }
+    var data = JSON.parse(cache);
+    return data["likes"] || [];
+};
+var likePost = exports.likePost = function likePost(uid, postId) {
+    if (!uid || !postId) {
+        return;
+    }
+    var cache = JSON.parse(localStorage.getItem("_user_post_data_" + uid) || "{}");
+    var postData = cache["likes"] || [];
+    postData.push(postId);
+    cache["likes"] = Array.from(new Set(postData));
+    localStorage.setItem("_user_post_data_" + uid, JSON.stringify(cache));
+};
 var bannerClosed = exports.bannerClosed = function bannerClosed(bannerId) {
     var cache = JSON.parse(localStorage.getItem("_user_banner_data") || "{}");
     var bannerData = cache[bannerId];
@@ -42176,8 +42197,12 @@ var TopicStore = function (_AbstractStore) {
             var postEditorState = _this.postEditorState,
                 editingPostText = _this.editingPostText,
                 editingPostMentions = _this.editingPostMentions,
-                topic = _this.topic;
+                topic = _this.topic,
+                submittingPost = _this.submittingPost;
 
+            if (submittingPost) {
+                return Promise.reject(false);
+            }
             var contentRaw = (0, _draftJs.convertToRaw)(postEditorState.getCurrentContent());
             var editingPostRaw = JSON.stringify(contentRaw);
             var editingPostHtml = (0, _draftjsToHtmlFork2.default)(contentRaw);
@@ -42386,6 +42411,50 @@ var TopicStore = function (_AbstractStore) {
             if ((0, _CacheKit.hasLikeTopic)(user.id, topic.id)) {
                 _this.setLike(true);
             }
+        };
+
+        _this.likePostActing = false;
+        _this.likedPosts = [];
+        _this.likePost = function (id) {
+            var likePostActing = _this.likePostActing,
+                posts = _this.posts,
+                likedPosts = _this.likedPosts;
+
+            if (likePostActing) {
+                return Promise.reject(false);
+            }
+            _this.likePostActing = true;
+            return (0, _Post.LikePost)({
+                id: id
+            }).then(function (result) {
+                if (result) {
+                    likedPosts.push(id);
+                    _this.likedPosts = Array.from(new Set(likedPosts));
+                    (0, _CacheKit.likePost)(_GlobalStore2.default.Instance.user.id, id);
+                    var newPosts = posts.map(function (post) {
+                        if (post.id === id) {
+                            var count = post.upvotesCount + 1;
+                            return Object.assign({}, post, {
+                                upvotesCount: count
+                            });
+                        }
+                        return post;
+                    });
+                    _this.posts = newPosts;
+                }
+                return result;
+            }).finally(function () {
+                _this.likePostActing = false;
+            });
+        };
+        _this.syncLikePostsCache = function () {
+            var globalStore = _GlobalStore2.default.Instance;
+            var user = globalStore.user;
+
+            if (!user || !user.id) {
+                return;
+            }
+            _this.likedPosts = (0, _CacheKit.getLikedPosts)(user.id);
         };
         if (!_env.IS_NODE) {
             var initialState = window.__INITIAL_STATE__ || {};
@@ -42630,6 +42699,10 @@ __decorate([_mobx.action], TopicStore.prototype, "likeTopic", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "unLikeTopic", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "handleLike", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "checkLikeStatus", void 0);
+__decorate([_mobx.observable], TopicStore.prototype, "likePostActing", void 0);
+__decorate([_mobx.observable], TopicStore.prototype, "likedPosts", void 0);
+__decorate([_mobx.action], TopicStore.prototype, "likePost", void 0);
+__decorate([_mobx.action], TopicStore.prototype, "syncLikePostsCache", void 0);
 
 /***/ }),
 /* 337 */
@@ -42645,6 +42718,7 @@ exports.CreatePost = CreatePost;
 exports.UpdatePost = UpdatePost;
 exports.FetchTopicPosts = FetchTopicPosts;
 exports.FetchUserPosts = FetchUserPosts;
+exports.LikePost = LikePost;
 
 var _WebApi = __webpack_require__(42);
 
@@ -42668,11 +42742,15 @@ function FetchTopicPosts(payload) {
 function FetchUserPosts(payload) {
     return _FormApi2.default.Get("posts", payload);
 }
+function LikePost(payload) {
+    return _FormApi2.default.Post("posts/" + payload.id + "/likes", {});
+}
 exports.default = {
     CreatePost: CreatePost,
     UpdatePost: UpdatePost,
     FetchTopicPosts: FetchTopicPosts,
-    FetchUserPosts: FetchUserPosts
+    FetchUserPosts: FetchUserPosts,
+    LikePost: LikePost
 };
 
 /***/ }),
@@ -93752,6 +93830,7 @@ var TopicMain = function (_React$Component) {
             _GlobalStore2.default.Instance.userPromise.then(function () {
                 store.checkFavoriteStatus();
                 store.checkLikeStatus();
+                store.syncLikePostsCache();
             });
         }
     }, {
@@ -93876,6 +93955,32 @@ var PostItem = function (_React$Component) {
                 type: "success"
             });
         };
+        _this.likePost = function () {
+            var _this$props2 = _this.props,
+                post = _this$props2.post,
+                store = _this$props2.store;
+            var likedPosts = store.likedPosts;
+
+            var hasLiked = likedPosts.includes(post.id);
+            if (hasLiked) {
+                return;
+            }
+            return store.likePost(post.id).then(function (result) {
+                if (result) {
+                    (0, _next.Message)({
+                        message: "感谢评论成功",
+                        type: "success"
+                    });
+                } else {
+                    throw new Error("");
+                }
+            }).catch(function (err) {
+                (0, _next.Message)({
+                    message: err.message || "感谢评论失败，请重新尝试",
+                    type: "error"
+                });
+            });
+        };
         return _this;
     }
 
@@ -93885,15 +93990,19 @@ var PostItem = function (_React$Component) {
             var _props = this.props,
                 post = _props.post,
                 store = _props.store;
-            var topic = store.topic;
-            var posts = store.posts;
+            var topic = store.topic,
+                posts = store.posts,
+                likedPosts = store.likedPosts,
+                likePostActing = store.likePostActing;
 
             var replyIndex = this.props.index + 1;
             var me = _GlobalStore2.default.Instance.user;
+            var hasLiked = likedPosts.includes(post.id);
+            var canLike = me.id !== post.authorId;
             var replies = posts.filter(function (x) {
                 return x.pid === post.id;
             });
-            return React.createElement("div", { className: styles.postItem, id: "post-" + post.id }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + post.authorName }, post.author.avatar ? React.createElement("span", { className: styles.avatar }, React.createElement("img", { src: post.author.avatar })) : React.createElement(_avatar2.default, { className: styles.avatar, user: post.author }), React.createElement("span", { className: styles.username }, post.author.nickname)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)((0, _moment2.default)(post.createTime * 1000)) }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(post.createTime * 1000))))), topic.authorId === post.authorId && React.createElement("li", { className: styles.idBadge }, React.createElement("span", null, "\u697C\u4E3B")), replyIndex === 1 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge1]) }, React.createElement("span", null, "\u6C99\u53D1")), replyIndex === 2 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge2]) }, React.createElement("span", null, "\u677F\u51F3")), replyIndex === 3 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge3]) }, React.createElement("span", null, "\u5730\u677F")))), React.createElement("div", { className: styles.postBody }, React.createElement(_pureHtmlContent2.default, { html: post.contentHtml })), React.createElement("aside", { className: styles.postActions }, React.createElement("ul", null, React.createElement("li", { className: styles.replyBtn }, React.createElement(_next.Button, { type: "text", onClick: this.goReply }, "\u56DE\u590D"), React.createElement(_reactCopyToClipboard.CopyToClipboard, { text: _GlobalStore2.default.Instance.getRefUrl(me ? me.id.toString() : "") + "#reply" + replyIndex, onCopy: this.refReplyLink }, React.createElement(_next.Button, { type: "text" }, React.createElement("i", { title: "引用", className: "fa fa-fw fa-link" })))))), React.createElement("footer", null, React.createElement("ul", null, !!replies && replies.length > 0 && replies.map(function (reply, index) {
+            return React.createElement("div", { className: styles.postItem, id: "post-" + post.id }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + post.authorName }, post.author.avatar ? React.createElement("span", { className: styles.avatar }, React.createElement("img", { src: post.author.avatar })) : React.createElement(_avatar2.default, { className: styles.avatar, user: post.author }), React.createElement("span", { className: styles.username }, post.author.nickname)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)((0, _moment2.default)(post.createTime * 1000)) }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(post.createTime * 1000))))), topic.authorId === post.authorId && React.createElement("li", { className: styles.idBadge }, React.createElement("span", null, "\u697C\u4E3B")), replyIndex === 1 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge1]) }, React.createElement("span", null, "\u6C99\u53D1")), replyIndex === 2 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge2]) }, React.createElement("span", null, "\u677F\u51F3")), replyIndex === 3 && React.createElement("li", { className: (0, _classnames2.default)([styles.orderBadge], [styles.orderBadge3]) }, React.createElement("span", null, "\u5730\u677F")))), React.createElement("div", { className: styles.postBody }, React.createElement(_pureHtmlContent2.default, { html: post.contentHtml })), React.createElement("aside", { className: styles.postActions }, React.createElement("ul", null, React.createElement("li", { className: styles.replyBtn }, canLike && React.createElement(_next.Button, { type: "text", onClick: this.likePost }, likePostActing ? React.createElement("i", { className: "el-icon-loading" }) : hasLiked ? "已感谢" : "感谢"), React.createElement(_next.Button, { type: "text", onClick: this.goReply }, "\u56DE\u590D"), React.createElement(_reactCopyToClipboard.CopyToClipboard, { text: _GlobalStore2.default.Instance.getRefUrl(me ? me.id.toString() : "") + "#reply" + replyIndex, onCopy: this.refReplyLink }, React.createElement(_next.Button, { type: "text" }, React.createElement("i", { title: "引用", className: "fa fa-fw fa-link" })))))), React.createElement("footer", null, React.createElement("ul", null, !!replies && replies.length > 0 && replies.map(function (reply, index) {
                 return React.createElement("li", { key: index, className: styles.reply }, React.createElement("a", { href: "#post-" + reply.id }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: React.createElement("div", { className: styles.replyTooltipContent }, reply.content.trim()), className: styles.replyTooltip }, React.createElement("i", { className: "icon fa fa-fw fa-reply" }), reply.authorName, " \u56DE\u590D\u4E86\u5B83")));
             })))));
         }
@@ -104045,7 +104154,7 @@ var BalanceView = function (_React$Component) {
             var data = details.map(function (detail) {
                 return Object.assign({}, detail);
             });
-            return React.createElement("div", { className: styles.detailList }, React.createElement(_next.Table, { className: styles.balanceTable, columns: columns, data: data, stripe: true, border: true }), loading && React.createElement("div", { className: styles.loading }, React.createElement("i", { className: "el-icon-loading" })));
+            return React.createElement("div", { className: styles.detailList }, React.createElement(_next.Table, { className: styles.balanceTable, columns: columns, data: data, stripe: true, border: false }), loading && React.createElement("div", { className: styles.loading }, React.createElement("i", { className: "el-icon-loading" })));
         };
         _this.renderRankList = function () {
             var _this$store2 = _this.store,
@@ -104201,7 +104310,7 @@ exports.default = {
     "101": "创建主题",
     "102": "创建回复",
     "103": "点赞主题",
-    "104": "点赞回复"
+    "104": "感谢回复"
 };
 
 /***/ }),
