@@ -93998,7 +93998,7 @@ var PostItem = function (_React$Component) {
             var replyIndex = this.props.index + 1;
             var me = _GlobalStore2.default.Instance.user;
             var hasLiked = likedPosts.includes(post.id);
-            var canLike = me.id !== post.authorId;
+            var canLike = me && me.id !== post.authorId;
             var replies = posts.filter(function (x) {
                 return x.pid === post.id;
             });
