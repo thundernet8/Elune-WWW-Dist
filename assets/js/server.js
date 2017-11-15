@@ -22503,6 +22503,8 @@ exports.FavoriteTopic = FavoriteTopic;
 exports.UnFavoriteTopic = UnFavoriteTopic;
 exports.LikeTopic = LikeTopic;
 exports.UnLikeTopic = UnLikeTopic;
+exports.StickyTopic = StickyTopic;
+exports.UnStickyTopic = UnStickyTopic;
 
 var _WebApi = __webpack_require__(42);
 
@@ -22544,6 +22546,12 @@ function LikeTopic(payload) {
 function UnLikeTopic(payload) {
     return _FormApi2.default.Delete("topics/" + payload.id + "/likes", {});
 }
+function StickyTopic(payload) {
+    return _FormApi2.default.Post("topics/" + payload.id + "/sticky", {});
+}
+function UnStickyTopic(payload) {
+    return _FormApi2.default.Delete("topics/" + payload.id + "/sticky", {});
+}
 exports.default = {
     CreateTopic: CreateTopic,
     UpdateTopic: UpdateTopic,
@@ -22554,7 +22562,9 @@ exports.default = {
     FavoriteTopic: FavoriteTopic,
     UnFavoriteTopic: UnFavoriteTopic,
     LikeTopic: LikeTopic,
-    UnLikeTopic: UnLikeTopic
+    UnLikeTopic: UnLikeTopic,
+    StickyTopic: StickyTopic,
+    UnStickyTopic: UnStickyTopic
 };
 
 /***/ }),
@@ -42357,12 +42367,12 @@ var TopicStore = function (_AbstractStore) {
             }).then(function (result) {
                 if (result) {
                     _this.setLike(true);
+                    (0, _CacheKit.likeTopic)(_GlobalStore2.default.Instance.user.id, id);
+                    var newTopic = Object.assign({}, topic, {
+                        upvotesCount: topic.upvotesCount + 1
+                    });
+                    _this.setTopic(newTopic);
                 }
-                (0, _CacheKit.likeTopic)(_GlobalStore2.default.Instance.user.id, id);
-                var newTopic = Object.assign({}, topic, {
-                    upvotesCount: topic.upvotesCount + 1
-                });
-                _this.setTopic(newTopic);
                 return result;
             }).finally(function () {
                 _this.likeActing = false;
@@ -42455,6 +42465,54 @@ var TopicStore = function (_AbstractStore) {
                 return;
             }
             _this.likedPosts = (0, _CacheKit.getLikedPosts)(user.id);
+        };
+
+        _this.stickyActing = false;
+        _this.stickyTopic = function () {
+            var topic = _this.topic,
+                stickyActing = _this.stickyActing;
+            var id = topic.id;
+
+            if (stickyActing) {
+                return Promise.reject(false);
+            }
+            _this.stickyActing = true;
+            return (0, _Topic.StickyTopic)({
+                id: id
+            }).then(function (result) {
+                if (result) {
+                    var newTopic = Object.assign({}, topic, {
+                        isPinned: 1
+                    });
+                    _this.setTopic(newTopic);
+                }
+                return result;
+            }).finally(function () {
+                _this.stickyActing = false;
+            });
+        };
+        _this.unStickyTopic = function () {
+            var topic = _this.topic,
+                stickyActing = _this.stickyActing;
+            var id = topic.id;
+
+            if (stickyActing) {
+                return Promise.reject(false);
+            }
+            _this.stickyActing = true;
+            return (0, _Topic.UnStickyTopic)({
+                id: id
+            }).then(function (result) {
+                if (result) {
+                    var newTopic = Object.assign({}, topic, {
+                        isPinned: 0
+                    });
+                    _this.setTopic(newTopic);
+                }
+                return result;
+            }).finally(function () {
+                _this.stickyActing = false;
+            });
         };
         if (!_env.IS_NODE) {
             var initialState = window.__INITIAL_STATE__ || {};
@@ -42703,6 +42761,9 @@ __decorate([_mobx.observable], TopicStore.prototype, "likePostActing", void 0);
 __decorate([_mobx.observable], TopicStore.prototype, "likedPosts", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "likePost", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "syncLikePostsCache", void 0);
+__decorate([_mobx.observable], TopicStore.prototype, "stickyActing", void 0);
+__decorate([_mobx.action], TopicStore.prototype, "stickyTopic", void 0);
+__decorate([_mobx.action], TopicStore.prototype, "unStickyTopic", void 0);
 
 /***/ }),
 /* 337 */
@@ -93558,7 +93619,7 @@ exports.default = TopicHero;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"hero":"__164kd","container":"__2EsXp","inner":"__2G3aW","topicMeta":"__3MQLl","topicTitle":"__1m3Us"};
+module.exports = {"hero":"__164kd","container":"__2EsXp","inner":"__2G3aW","topicMeta":"__3MQLl","sticky":"__2l41H","topicTitle":"__1m3Us"};
 
 /***/ }),
 /* 846 */
@@ -93749,6 +93810,38 @@ var TopicMain = function (_React$Component) {
                 });
             });
         };
+        _this.stickyTopic = function () {
+            var store = _this.props.store;
+            var stickyTopic = store.stickyTopic;
+
+            return stickyTopic().then(function () {
+                (0, _next.Message)({
+                    message: "置顶话题成功",
+                    type: "success"
+                });
+            }).catch(function () {
+                (0, _next.Message)({
+                    message: "置顶话题失败",
+                    type: "error"
+                });
+            });
+        };
+        _this.unStickyTopic = function () {
+            var store = _this.props.store;
+            var unStickyTopic = store.unStickyTopic;
+
+            return unStickyTopic().then(function () {
+                (0, _next.Message)({
+                    message: "取消置顶话题成功",
+                    type: "success"
+                });
+            }).catch(function () {
+                (0, _next.Message)({
+                    message: "取消置顶话题失败",
+                    type: "error"
+                });
+            });
+        };
         _this.renderMainThread = function () {
             var store = _this.props.store;
             var topic = store.topic,
@@ -93757,7 +93850,9 @@ var TopicMain = function (_React$Component) {
                 hasLiked = store.hasLiked,
                 likeActing = store.likeActing,
                 canEditTopic = store.canEditTopic,
-                submittingEditTopic = store.submittingEditTopic;
+                submittingEditTopic = store.submittingEditTopic,
+                stickyActing = store.stickyActing;
+            var isPinned = topic.isPinned;
             var editingTopic = _this.state.editingTopic;
 
             var me = _GlobalStore2.default.Instance.user;
@@ -93765,6 +93860,8 @@ var TopicMain = function (_React$Component) {
 
             var followTopicIds = me ? me.followingTopicIds : [];
             return React.createElement("div", { className: styles.topicWrapper, id: "thread" }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + topic.authorName }, React.createElement(_avatar2.default, { className: styles.avatar, user: topic.author }), React.createElement("span", { className: styles.username }, topic.author.nickname)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)((0, _moment2.default)(topic.createTime * 1000)) }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(topic.createTime * 1000))))), !!topic.updateTime && React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)((0, _moment2.default)(topic.updateTime * 1000)) }, React.createElement("span", null, React.createElement("span", { className: styles.dot }, "\xB7"), " ", "\u66F4\u65B0\u4E8E", (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(topic.updateTime * 1000))))), function (that) {
+                return React.createElement("li", { className: styles.editActions }, React.createElement(_next.Button, { type: "text", onClick: isPinned ? that.unStickyTopic : that.stickyTopic }, stickyActing && React.createElement("i", { className: "el-icon-loading" }), isPinned ? "取消置顶" : "置顶"));
+            }(_this), function (that) {
                 if (!canEditTopic) {
                     return null;
                 }
@@ -101143,7 +101240,7 @@ module.exports = {"postEditor":"__29Tnd","editorWrapper":"__2t-f8","editorToolba
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"mainView":"__2qZrV","mainWrapper":"__Md1xO","topicLoading":"__337lc","postsLoading":"__Y7rgR","topicWrapper":"__3Uoyd","inner":"__3Jdtl","idBadge":"__3G-z6","editActions":"__MW08B","goEditTopic":"__y0wK6","dot":"__2e2Wm","author":"__OULBy","avatar":"__1daWR","topicBody":"__2jp__","asideActions":"__3fPwY","count":"__1etwN","views":"__10Nos","commentPlaceholder":"__2PBa0","commentEditorWrapper":"__12Kba","commentEditBody":"__29ON_","close":"__eQ5tH","commentEditor":"__1DG7h","commentEditorToolbar":"__19gOR","topicBodyEditing":"__1dTeu"};
+module.exports = {"mainView":"__2qZrV","mainWrapper":"__Md1xO","topicLoading":"__337lc","postsLoading":"__Y7rgR","topicWrapper":"__3Uoyd","inner":"__3Jdtl","idBadge":"__3G-z6","editActions":"__MW08B","dot":"__2e2Wm","author":"__OULBy","avatar":"__1daWR","topicBody":"__2jp__","asideActions":"__3fPwY","count":"__1etwN","views":"__10Nos","commentPlaceholder":"__2PBa0","commentEditorWrapper":"__12Kba","commentEditBody":"__29ON_","close":"__eQ5tH","commentEditor":"__1DG7h","commentEditorToolbar":"__19gOR","topicBodyEditing":"__1dTeu"};
 
 /***/ }),
 /* 882 */
@@ -104299,17 +104396,19 @@ exports.default = {
     "1": "注册奖励",
     "2": "注册推广奖励",
     "3": "注册特别奖励",
-    "5": "主题回复收益",
-    "6": "主题收藏收益",
-    "7": "主题收藏收益回收",
-    "8": "主题点赞收益",
-    "9": "主题点赞收益回收",
-    "10": "主题关注收益",
-    "11": "主题关注收益回收",
+    "5": "话题回复收益",
+    "6": "话题收藏收益",
+    "7": "话题收藏收益回收",
+    "8": "话题点赞收益",
+    "9": "话题点赞收益回收",
+    "10": "话题关注收益",
+    "11": "话题关注收益回收",
+    "12": "回复被赞收益",
+    "13": "话题置顶收益",
     "20": "每日签到奖励",
-    "101": "创建主题",
+    "101": "创建话题",
     "102": "创建回复",
-    "103": "点赞主题",
+    "103": "点赞话题",
     "104": "感谢回复"
 };
 
