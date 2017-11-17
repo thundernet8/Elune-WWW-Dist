@@ -42674,6 +42674,17 @@ var TopicStore = function (_AbstractStore) {
         get: function get() {
             return this.editingPostText.length < 1;
         }
+    }, {
+        key: "canStickyTopic",
+        get: function get() {
+            var me = _GlobalStore2.default.Instance.user;
+            var topic = this.topic;
+
+            if (!me || !topic) {
+                return false;
+            }
+            return me.roleId <= 2;
+        }
     }], [{
         key: "getInstance",
         value: function getInstance() {
@@ -42762,6 +42773,7 @@ __decorate([_mobx.observable], TopicStore.prototype, "likedPosts", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "likePost", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "syncLikePostsCache", void 0);
 __decorate([_mobx.observable], TopicStore.prototype, "stickyActing", void 0);
+__decorate([_mobx.computed], TopicStore.prototype, "canStickyTopic", null);
 __decorate([_mobx.action], TopicStore.prototype, "stickyTopic", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "unStickyTopic", void 0);
 
@@ -93851,6 +93863,7 @@ var TopicMain = function (_React$Component) {
                 likeActing = store.likeActing,
                 canEditTopic = store.canEditTopic,
                 submittingEditTopic = store.submittingEditTopic,
+                canStickyTopic = store.canStickyTopic,
                 stickyActing = store.stickyActing;
             var isPinned = topic.isPinned;
             var editingTopic = _this.state.editingTopic;
@@ -93860,6 +93873,9 @@ var TopicMain = function (_React$Component) {
 
             var followTopicIds = me ? me.followingTopicIds : [];
             return React.createElement("div", { className: styles.topicWrapper, id: "thread" }, React.createElement("div", { className: styles.inner }, React.createElement("header", null, React.createElement("ul", null, React.createElement("li", { className: styles.author }, React.createElement("h3", null, React.createElement(_reactRouterDom.Link, { to: "/u/" + topic.authorName }, React.createElement(_avatar2.default, { className: styles.avatar, user: topic.author }), React.createElement("span", { className: styles.username }, topic.author.nickname)))), React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)((0, _moment2.default)(topic.createTime * 1000)) }, React.createElement("span", null, (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(topic.createTime * 1000))))), !!topic.updateTime && React.createElement("li", { className: styles.meta }, React.createElement(_next.Tooltip, { effect: "dark", placement: "top", content: (0, _DateTimeKit.getGMT8DateStr)((0, _moment2.default)(topic.updateTime * 1000)) }, React.createElement("span", null, React.createElement("span", { className: styles.dot }, "\xB7"), " ", "\u66F4\u65B0\u4E8E", (0, _DateTimeKit.getTimeDiff)((0, _moment2.default)(topic.updateTime * 1000))))), function (that) {
+                if (!canStickyTopic) {
+                    return null;
+                }
                 return React.createElement("li", { className: styles.editActions }, React.createElement(_next.Button, { type: "text", onClick: isPinned ? that.unStickyTopic : that.stickyTopic }, stickyActing && React.createElement("i", { className: "el-icon-loading" }), isPinned ? "取消置顶" : "置顶"));
             }(_this), function (that) {
                 if (!canEditTopic) {
