@@ -11920,7 +11920,7 @@ if ((typeof __MOBX_DEVTOOLS_GLOBAL_HOOK__ === 'undefined' ? 'undefined' : _typeo
 exports.__esModule = true;
 exports.IS_PROD = "production" === "production";
 exports.IS_NODE = typeof global !== "undefined" && new Object().toString.call(global) === "[object global]";
-exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "http://127.0.0.1:9000/api/v1/";
+exports.API_BASE = exports.IS_PROD && !exports.IS_NODE ? "https://elune.fuli.news/api/v1/" : "https://elune.fuli.news/api/v1/";
 
 exports.SSR_SERVER_HOST = exports.IS_PROD ? "127.0.0.1" : "127.0.0.1";
 exports.SSR_SERVER_PORT = exports.IS_PROD ? 9002 : 9002;
@@ -24349,10 +24349,6 @@ var HomeStore = function (_AbstractStore) {
 
         var _this = _possibleConstructorReturn(this, (HomeStore.__proto__ || Object.getPrototypeOf(HomeStore)).call(this, arg));
 
-        _this.setField = function (field, value) {
-            _this[field] = value;
-        };
-
         _this.channels = [];
         _this.setChannels = function (channels) {
             _this.channels = channels;
@@ -24409,13 +24405,13 @@ var HomeStore = function (_AbstractStore) {
             if ((page - 1) * pageSize >= total) {
                 return;
             }
-            _this.setField("page", page + 1);
+            _this.page = page + 1;
             _this.getTopics(true);
         };
         _this.refreshTopics = function () {
             _this.setTopics([]);
-            _this.setField("page", 1);
-            _this.setField("total", 0);
+            _this.page = 1;
+            _this.total = 0;
             _this.getTopics();
         };
         if (!_env.IS_NODE) {
@@ -24469,7 +24465,7 @@ var HomeStore = function (_AbstractStore) {
             if (typeof topics !== "undefined") {
                 this.setTopics(topics);
             }
-            this.setField("total", total);
+            this.total = total;
             return this;
         }
     }, {
@@ -24517,7 +24513,6 @@ var HomeStore = function (_AbstractStore) {
 
 exports.default = HomeStore;
 
-__decorate([_mobx.action], HomeStore.prototype, "setField", void 0);
 __decorate([_mobx.observable], HomeStore.prototype, "channels", void 0);
 __decorate([_mobx.action], HomeStore.prototype, "setChannels", void 0);
 __decorate([_mobx.computed], HomeStore.prototype, "topChannels", null);
@@ -24535,6 +24530,7 @@ __decorate([_mobx.action], HomeStore.prototype, "switchSort", void 0);
 __decorate([_mobx.action], HomeStore.prototype, "getTopics", void 0);
 __decorate([_mobx.action], HomeStore.prototype, "getNextPageTopics", void 0);
 __decorate([_mobx.action], HomeStore.prototype, "refreshTopics", void 0);
+__decorate([_mobx.action], HomeStore.prototype, "fromJSON", null);
 
 /***/ }),
 /* 132 */
@@ -41883,9 +41879,6 @@ var ChannelsStore = function (_AbstractStore) {
 
         var _this = _possibleConstructorReturn(this, (ChannelsStore.__proto__ || Object.getPrototypeOf(ChannelsStore)).call(this, arg));
 
-        _this.setField = function (field, value) {
-            _this[field] = value;
-        };
         _this.loading = false;
 
         _this.channels = [];
@@ -41994,7 +41987,6 @@ var ChannelsStore = function (_AbstractStore) {
 
 exports.default = ChannelsStore;
 
-__decorate([_mobx.action], ChannelsStore.prototype, "setField", void 0);
 __decorate([_mobx.observable], ChannelsStore.prototype, "loading", void 0);
 __decorate([_mobx.observable], ChannelsStore.prototype, "channels", void 0);
 __decorate([_mobx.action], ChannelsStore.prototype, "setChannels", void 0);
@@ -42069,9 +42061,6 @@ var TopicStore = function (_AbstractStore) {
 
         var _this = _possibleConstructorReturn(this, (TopicStore.__proto__ || Object.getPrototypeOf(TopicStore)).call(this, arg));
 
-        _this.setField = function (field, value) {
-            _this[field] = value;
-        };
         _this.loading = false;
         _this.editTopicContent = "";
         _this.editTopciContentHtml = "";
@@ -42127,12 +42116,13 @@ var TopicStore = function (_AbstractStore) {
             _this.loading = true;
             return (0, _Topic.FetchTopic)({ id: Number(id) }).then(function (resp) {
                 _this.setTopic(resp);
-                _this.setField("loading", false);
             }).then(function () {
                 if (!_env.IS_NODE) {
                     _this.checkFavoriteStatus();
                     _this.checkLikeStatus();
                 }
+            }).finally(function () {
+                _this.loading = false;
             });
         };
         _this.postsLoading = false;
@@ -42161,19 +42151,16 @@ var TopicStore = function (_AbstractStore) {
                 orderBy: orderBy,
                 topicId: Number(id)
             };
-            _this.setField("postsLoading", true);
+            _this.postsLoading = true;
             return (0, _Post.FetchTopicPosts)(params).then(function (resp) {
                 _this.setPosts(keepExist ? posts.concat(resp.items) : resp.items);
-                _this.setField("postsLoading", false);
-                if (postPage === 1) {
-                    _this.setField("total", resp.total);
-                }
+                _this.postTotal = resp.total;
                 return resp;
-            }).catch(function () {
-                _this.setField("topicsLoading", false);
+            }).finally(function () {
+                _this.postsLoading = false;
             });
         };
-        _this.getNextPageTopics = function () {
+        _this.getNextPagePosts = function () {
             var postPage = _this.postPage,
                 postPageSize = _this.postPageSize,
                 postTotal = _this.postTotal;
@@ -42181,13 +42168,13 @@ var TopicStore = function (_AbstractStore) {
             if ((postPage - 1) * postPageSize >= postTotal) {
                 return;
             }
-            _this.setField("postPage", postPage + 1);
+            _this.postPage = postPage + 1;
             _this.getPosts(true);
         };
         _this.refreshPosts = function () {
             _this.setPosts([]);
-            _this.setField("postPage", 1);
-            _this.setField("postTotal", 0);
+            _this.postPage = 1;
+            _this.postTotal = 0;
             _this.getPosts();
         };
         _this.submittingPost = false;
@@ -42247,13 +42234,11 @@ var TopicStore = function (_AbstractStore) {
                 topicOwnerId: topic.authorId,
                 mentions: mentions
             }).then(function (resp) {
-                _this.setField("submittingPost", false);
-                _this.setField("postEditorState", _draftJs.EditorState.createEmpty());
+                _this.postEditorState = _draftJs.EditorState.createEmpty();
                 _this.getPosts();
                 return resp;
-            }).catch(function (err) {
-                _this.setField("submittingPost", false);
-                throw new Error(err);
+            }).finally(function () {
+                _this.submittingPost = false;
             });
         };
         _this.postEditorState = _draftJs.EditorState.createEmpty();
@@ -42565,7 +42550,7 @@ var TopicStore = function (_AbstractStore) {
             if (typeof posts !== "undefined") {
                 this.setPosts(posts);
             }
-            this.setField("postTotal", postTotal);
+            this.postTotal = postTotal;
             return this;
         }
     }, {
@@ -42719,7 +42704,6 @@ var TopicStore = function (_AbstractStore) {
 
 exports.default = TopicStore;
 
-__decorate([_mobx.action], TopicStore.prototype, "setField", void 0);
 __decorate([_mobx.observable], TopicStore.prototype, "loading", void 0);
 __decorate([_mobx.computed], TopicStore.prototype, "canEditTopic", null);
 __decorate([_mobx.observable], TopicStore.prototype, "editTopicContent", void 0);
@@ -42742,7 +42726,7 @@ __decorate([_mobx.computed], TopicStore.prototype, "mentions", null);
 __decorate([_mobx.computed], TopicStore.prototype, "hasMorePosts", null);
 __decorate([_mobx.action], TopicStore.prototype, "setPosts", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "getPosts", void 0);
-__decorate([_mobx.action], TopicStore.prototype, "getNextPageTopics", void 0);
+__decorate([_mobx.action], TopicStore.prototype, "getNextPagePosts", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "refreshPosts", void 0);
 __decorate([_mobx.computed], TopicStore.prototype, "editingPostText", null);
 __decorate([_mobx.computed], TopicStore.prototype, "editingPostMentions", null);
@@ -42776,6 +42760,7 @@ __decorate([_mobx.observable], TopicStore.prototype, "stickyActing", void 0);
 __decorate([_mobx.computed], TopicStore.prototype, "canStickyTopic", null);
 __decorate([_mobx.action], TopicStore.prototype, "stickyTopic", void 0);
 __decorate([_mobx.action], TopicStore.prototype, "unStickyTopic", void 0);
+__decorate([_mobx.action], TopicStore.prototype, "fromJSON", null);
 
 /***/ }),
 /* 337 */
@@ -49680,9 +49665,6 @@ var UCStore = function (_AbstractStore) {
 
         var _this = _possibleConstructorReturn(this, (UCStore.__proto__ || Object.getPrototypeOf(UCStore)).call(this, arg));
 
-        _this.setField = function (field, value) {
-            _this[field] = value;
-        };
         _this.loading = false;
 
         _this.user = {};
@@ -49696,8 +49678,8 @@ var UCStore = function (_AbstractStore) {
 
             _this.loading = true;
             return (0, _User.FetchNamedUser)({ username: username }).then(function (resp) {
-                _this.setField("user", resp || {});
-                _this.setField("loading", false);
+                _this.user = resp || {};
+                _this.loading = false;
                 switch (tab) {
                     case undefined:
                     case "posts":
@@ -49707,8 +49689,8 @@ var UCStore = function (_AbstractStore) {
                     case "favorites":
                         if (!_env.IS_NODE) {
                             return _GlobalStore2.default.Instance.userPromise.then(function (me) {
-                                if (me.id === resp.id) {
-                                    return _this.getUserFavorites();
+                                if (me.id === resp.id) {} else {
+                                    return Promise.resolve(true);
                                 }
                             });
                         }
@@ -49724,7 +49706,7 @@ var UCStore = function (_AbstractStore) {
             var user = _this.user;
 
             user[field] = value;
-            _this.setField("user", Object.assign({}, user));
+            _this.user = Object.assign({}, user);
         };
 
         _this.topics = [];
@@ -49760,12 +49742,10 @@ var UCStore = function (_AbstractStore) {
                 orderBy: topicsOrderBy,
                 authorId: user.id
             };
-            _this.setField("topicsLoading", true);
+            _this.topicsLoading = true;
             return (0, _Topic.FetchUserTopics)(params).then(function (resp) {
                 _this.setTopics(topics.concat(resp.items));
-                if (topicsPage === 1) {
-                    _this.setField("topicsTotal", resp.total);
-                }
+                _this.topicsTotal = resp.total;
                 return resp;
             }).finally(function () {
                 _this.topicsLoading = false;
@@ -49779,13 +49759,13 @@ var UCStore = function (_AbstractStore) {
             if ((topicsPage - 1) * topicsPageSize >= topicsTotal) {
                 return;
             }
-            _this.setField("topicsPage", topicsPage + 1);
+            _this.topicsPage = topicsPage + 1;
             _this.getUserTopics();
         };
         _this.refreshTopics = function () {
             _this.setTopics([]);
-            _this.setField("topicsPage", 1);
-            _this.setField("topicsTotal", 0);
+            _this.topicsPage = 1;
+            _this.topicsTotal = 0;
             _this.getUserTopics();
         };
 
@@ -49821,16 +49801,13 @@ var UCStore = function (_AbstractStore) {
                 orderBy: postsOrderBy,
                 authorId: user.id
             };
-            _this.setField("postsLoading", true);
+            _this.postsLoading = true;
             return (0, _Post.FetchUserPosts)(params).then(function (resp) {
                 _this.setPosts(posts.concat(resp.items));
-                _this.setField("postsLoading", false);
-                if (postsPage === 1) {
-                    _this.setField("postsTotal", resp.total);
-                }
+                _this.postsTotal = resp.total;
                 return resp;
-            }).catch(function () {
-                _this.setField("postsLoading", false);
+            }).finally(function () {
+                _this.postsLoading = false;
             });
         };
         _this.getNextPagePosts = function () {
@@ -49841,13 +49818,13 @@ var UCStore = function (_AbstractStore) {
             if ((postsPage - 1) * postsPageSize >= postsTotal) {
                 return;
             }
-            _this.setField("postsPage", postsPage + 1);
+            _this.postsPage = postsPage + 1;
             _this.getUserPosts();
         };
         _this.refreshPosts = function () {
             _this.setPosts([]);
-            _this.setField("postsPage", 1);
-            _this.setField("postsTotal", 0);
+            _this.postsPage = 1;
+            _this.postsTotal = 0;
             _this.getUserPosts();
         };
 
@@ -49872,16 +49849,13 @@ var UCStore = function (_AbstractStore) {
                 page: favoritesPage,
                 pageSize: favoritesPageSize
             };
-            _this.setField("favoritesLoading", true);
+            _this.favoritesLoading = true;
             return (0, _User.FetchUserFavorites)(params).then(function (resp) {
                 _this.setFavorites(favorites.concat(resp.items));
-                _this.setField("favoritesLoading", false);
-                if (favoritesPage === 1) {
-                    _this.setField("favoritesTotal", resp.total);
-                }
+                _this.favoritesTotal = resp.total;
                 return resp;
-            }).catch(function () {
-                _this.setField("favoritesLoading", false);
+            }).finally(function () {
+                _this.favoritesLoading = false;
             });
         };
         _this.getNextPageFavorites = function () {
@@ -49892,13 +49866,13 @@ var UCStore = function (_AbstractStore) {
             if ((favoritesPage - 1) * favoritesPageSize >= favoritesTotal) {
                 return;
             }
-            _this.setField("favoritesPage", favoritesPage + 1);
+            _this.favoritesPage = favoritesPage + 1;
             _this.getUserFavorites();
         };
         _this.refreshFavorites = function () {
             _this.setFavorites([]);
-            _this.setField("favoritesPage", 1);
-            _this.setField("favoritesTotal", 0);
+            _this.favoritesPage = 1;
+            _this.favoritesTotal = 0;
             _this.getUserFavorites();
         };
         _this.inputProfileSettings = function (field, value) {
@@ -49983,19 +49957,19 @@ var UCStore = function (_AbstractStore) {
                 postsTotal = json.postsTotal;
 
             if (typeof user !== "undefined") {
-                this.setField("user", user);
+                this.user = user;
             }
             if (typeof topics !== "undefined") {
-                this.setField("topics", topics);
+                this.topics = topics;
             }
             if (typeof posts !== "undefined") {
-                this.setField("posts", posts);
+                this.posts = posts;
             }
             if (typeof topicsTotal !== "undefined") {
-                this.setField("topicsTotal", topicsTotal);
+                this.topicsTotal = topicsTotal;
             }
             if (typeof postsTotal !== "undefined") {
-                this.setField("postsTotal", postsTotal);
+                this.postsTotal = postsTotal;
             }
             return this;
         }
@@ -50060,7 +50034,6 @@ var UCStore = function (_AbstractStore) {
 
 exports.default = UCStore;
 
-__decorate([_mobx.action], UCStore.prototype, "setField", void 0);
 __decorate([_mobx.observable], UCStore.prototype, "loading", void 0);
 __decorate([_mobx.observable], UCStore.prototype, "user", void 0);
 __decorate([_mobx.action], UCStore.prototype, "getUser", void 0);
@@ -50106,6 +50079,7 @@ __decorate([_mobx.action], UCStore.prototype, "inputProfileSettings", void 0);
 __decorate([_mobx.action], UCStore.prototype, "setProfileSettings", void 0);
 __decorate([_mobx.observable], UCStore.prototype, "profileSaving", void 0);
 __decorate([_mobx.action], UCStore.prototype, "saveProfile", void 0);
+__decorate([_mobx.action], UCStore.prototype, "fromJSON", null);
 
 /***/ }),
 /* 385 */
@@ -50168,10 +50142,6 @@ var CreateTopicStore = function (_AbstractStore) {
 
         var _this = _possibleConstructorReturn(this, (CreateTopicStore.__proto__ || Object.getPrototypeOf(CreateTopicStore)).call(this, arg));
 
-        _this.setField = function (field, value) {
-            _this[field] = value;
-        };
-
         _this.channels = [];
         _this.setChannels = function (channels) {
             _this.channels = channels;
@@ -50231,11 +50201,9 @@ var CreateTopicStore = function (_AbstractStore) {
                 contentRaw: contentRaw
             }).then(function (resp) {
                 _this.clearData();
-                _this.setField("requesting", false);
                 return resp;
-            }).catch(function (err) {
-                _this.setField("requesting", false);
-                throw new Error(err);
+            }).finally(function () {
+                _this.requesting = false;
             });
         };
         _this.clearData = function () {
@@ -50336,7 +50304,6 @@ var CreateTopicStore = function (_AbstractStore) {
 
 exports.default = CreateTopicStore;
 
-__decorate([_mobx.action], CreateTopicStore.prototype, "setField", void 0);
 __decorate([_mobx.observable], CreateTopicStore.prototype, "channels", void 0);
 __decorate([_mobx.action], CreateTopicStore.prototype, "setChannels", void 0);
 __decorate([_mobx.computed], CreateTopicStore.prototype, "topChannels", null);
@@ -93890,14 +93857,12 @@ var TopicMain = function (_React$Component) {
             var store = _this.props.store;
             var loading = store.loading,
                 postsLoading = store.postsLoading,
-                posts = store.posts;
+                posts = store.posts,
+                hasMorePosts = store.hasMorePosts;
 
-            if (!loading && postsLoading) {
-                return React.createElement("div", { className: styles.postsLoading }, React.createElement("i", { className: "el-icon-loading" }));
-            }
             return React.createElement("div", { className: styles.postListWrapper }, React.createElement("ul", { className: styles.postList }, posts.map(function (post, index) {
                 return React.createElement("li", { key: index, id: "reply" + (index + 1) }, React.createElement(_postItem2.default, { index: index, post: post, store: store, goReply: _this.goReply }));
-            })));
+            })), !loading && postsLoading && React.createElement("div", { className: styles.postsLoading }, React.createElement("i", { className: "el-icon-loading" })), !postsLoading && hasMorePosts && React.createElement("div", { className: styles.loadMore }, React.createElement(_next.Button, { onClick: store.getNextPagePosts }, "\u8F7D\u5165\u66F4\u591A")));
         };
         _this.renderPostBox = function () {
             var store = _this.props.store;
@@ -101256,7 +101221,7 @@ module.exports = {"postEditor":"__29Tnd","editorWrapper":"__2t-f8","editorToolba
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-module.exports = {"mainView":"__2qZrV","mainWrapper":"__Md1xO","topicLoading":"__337lc","postsLoading":"__Y7rgR","topicWrapper":"__3Uoyd","inner":"__3Jdtl","idBadge":"__3G-z6","editActions":"__MW08B","dot":"__2e2Wm","author":"__OULBy","avatar":"__1daWR","topicBody":"__2jp__","asideActions":"__3fPwY","count":"__1etwN","views":"__10Nos","commentPlaceholder":"__2PBa0","commentEditorWrapper":"__12Kba","commentEditBody":"__29ON_","close":"__eQ5tH","commentEditor":"__1DG7h","commentEditorToolbar":"__19gOR","topicBodyEditing":"__1dTeu"};
+module.exports = {"mainView":"__2qZrV","mainWrapper":"__Md1xO","topicLoading":"__337lc","postsLoading":"__Y7rgR","topicWrapper":"__3Uoyd","inner":"__3Jdtl","idBadge":"__3G-z6","editActions":"__MW08B","dot":"__2e2Wm","author":"__OULBy","avatar":"__1daWR","topicBody":"__2jp__","asideActions":"__3fPwY","count":"__1etwN","views":"__10Nos","commentPlaceholder":"__2PBa0","commentEditorWrapper":"__12Kba","commentEditBody":"__29ON_","close":"__eQ5tH","commentEditor":"__1DG7h","commentEditorToolbar":"__19gOR","topicBodyEditing":"__1dTeu","loadMore":"__3hz8e"};
 
 /***/ }),
 /* 882 */
